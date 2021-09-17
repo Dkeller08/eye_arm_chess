@@ -12,6 +12,7 @@ class Square:
         self.screeny = screen.get_height()
         self.x = (letter / 8) * self.screenx
         self.y = ((7/8)-(number/8))*self.screeny
+        self.possibleMove = False
         if (letter+number) % 2 == 1:
             self.color = "white"
         else:

@@ -16,7 +16,6 @@ squares = np.full((8, 8), Board.Square(0, 0, screen))
 for i in range(8):
     for j in range(8):
         squares[i][j] = Board.Square(i, j, screen)
-        print(squares[i][j].x)
 
 # Game Loop
 running = True
