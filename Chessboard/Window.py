@@ -1,14 +1,22 @@
 import pygame
+import Board
+import numpy as np
 
-#initialize pygame
+# initialize pygame
 pygame.init()
 
-screen = pygame.display.set_mode((800,600))
-
-#Title and Icon
+# Title and Icon
 pygame.display.set_caption("EyeChess")
-icon = pygame.image.load("../Images/Logo.png").convert()
+icon = pygame.image.load("../Images/Logo.png")
 pygame.display.set_icon(icon)
+screen = pygame.display.set_mode((600, 600))
+
+# Get board
+squares = np.full((8, 8), Board.Square(0, 0, screen))
+for i in range(8):
+    for j in range(8):
+        squares[i][j] = Board.Square(i, j, screen)
+        print(squares[i][j].x)
 
 # Game Loop
 running = True
@@ -16,3 +24,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    for i in range(8):
+        for j in range(8):
+            screen.blit(squares[i][j].image, (int(squares[i][j].x), int(squares[i][j].y)))
+
+    pygame.display.update()
