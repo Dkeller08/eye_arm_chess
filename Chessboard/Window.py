@@ -12,15 +12,27 @@ pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((600, 600))
 
 # Get board
-squares = np.full((8, 8), Board.Square(0, 0, screen))
+squares = np.full((8, 8), Board.Square(0, 0, screen, False))
 for i in range(8):
     for j in range(8):
-        squares[i][j] = Board.Square(i, j, screen)
+        squares[i][j] = Board.Square(i, j, screen, False)
+# Set some constants
+mousex, mousey = 20, 20
 
 # Game Loop
 running = True
 while running:
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            squares[int(8 * mousex / screen.get_width())][
+                int(8 * (screen.get_height() - mousey) / screen.get_height())] = Board.Square(
+                int(8 * mousex / screen.get_width()), int(8 * (screen.get_height() - mousey) / screen.get_height()),
+                screen, False)
+            mousex, mousey = pygame.mouse.get_pos()
+            squares[int(8 * mousex / screen.get_width())][
+                int(8 * (screen.get_height() - mousey) / screen.get_height())] = Board.Square(
+                int(8 * mousex / screen.get_width()), int(8 * (screen.get_height() - mousey) / screen.get_height()),
+                screen, True)
         if event.type == pygame.QUIT:
             running = False
 

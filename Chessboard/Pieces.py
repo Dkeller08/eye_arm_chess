@@ -61,3 +61,19 @@ class Queen:
             for j in range(8):
                 if square.number == i or square.letter == j or square.number - square.letter == i - j or square.number + square.letter == i + j:
                     Window.squares[i][j].possibleMove = True
+
+
+class Pawn:
+    def __init__(self, square, player):
+        self.square = square
+        self.player = player
+        self.image = pygame.image.load("../Images/" + player + "_pawn.png")
+        self.image = pygame.transform.scale(self.image, (int(self.screenx / 8), int(self.screeny / 8)))
+        for i in range(8):
+            for j in range(8):
+                if player == "white":
+                    if square.letter == i and (j - square.number == 1 or (j - square.number == 2 and j == 3)):
+                        Window.squares[i][j].possibleMove = True
+                else:
+                    if square.letter == i and (j - square.number == -1 or (j - square.number == -2 and j == 4)):
+                        Window.squares[i][j].possibleMove = True
