@@ -18,21 +18,20 @@ for i in range(8):
         squares[i][j] = Board.Square(i, j, screen, False)
 # Set some constants
 mousex, mousey = 20, 20
+h, w = screen.get_height(), screen.get_width()
 
 # Game Loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            squares[int(8 * mousex / screen.get_width())][
-                int(8 * (screen.get_height() - mousey) / screen.get_height())] = Board.Square(
-                int(8 * mousex / screen.get_width()), int(8 * (screen.get_height() - mousey) / screen.get_height()),
-                screen, False)
+            squares[int(8 * mousex / w)][int(8 * (h - mousey) / h)] = Board.Square(int(8 * mousex / w),
+                                                                                   int(8 * (h - mousey) / h), screen,
+                                                                                   False)
             mousex, mousey = pygame.mouse.get_pos()
-            squares[int(8 * mousex / screen.get_width())][
-                int(8 * (screen.get_height() - mousey) / screen.get_height())] = Board.Square(
-                int(8 * mousex / screen.get_width()), int(8 * (screen.get_height() - mousey) / screen.get_height()),
-                screen, True)
+            squares[int(8 * mousex / w)][int(8 * (h - mousey) / h)] = Board.Square(int(8 * mousex / w),
+                                                                                   int(8 * (h - mousey) / h), screen,
+                                                                                   True)
         if event.type == pygame.QUIT:
             running = False
 
