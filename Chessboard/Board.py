@@ -4,12 +4,12 @@ pygame.init()
 
 
 class Square:
-    def __init__(self, letter, number, screen, piece, player, possibleMove):
+    def __init__(self, letter, number, screen, piece, possibleMove):
         self.letter = letter
         self.number = number
         self.screen = screen
         self.piece = piece
-        self.player = player
+        self.possibleMove = possibleMove
         self.screenx = screen.get_width()
         self.screeny = screen.get_height()
         self.x = (letter / 8) * self.screenx
