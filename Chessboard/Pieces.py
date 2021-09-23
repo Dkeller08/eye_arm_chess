@@ -16,7 +16,7 @@ class Rook:
         self.number = number
         for i in range(8):
             for j in range(8):
-                self.board[i][j] = self.number == i or self.letter == j
+                self.board[i][j] = self.number == j or self.letter == i
 
 
 
@@ -114,5 +114,9 @@ class Pawn:
 def starting_position(letter, number):
     if letter == 1 and number == 5:
         return Horse(letter, number, "black")
+    if letter == 1 and number == 3:
+        return Rook(letter, number, "black")
+    if letter == 1 and number == 1:
+        return Pawn(letter, number, "white")
     else:
         return None

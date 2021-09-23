@@ -30,7 +30,9 @@ while running:
             mouse2x, mouse2y = pygame.mouse.get_pos()
             movex = int(8 * mouse2x / w)
             movey = int(8 * (h - mouse2y) / h)
-            if squares[movex][movey].possibleMove:
+            if squares[squarex][squarey].piece is not None and squares[movex][movey].possibleMove and (squares[movex][movey].piece is None or
+                                                       squares[movex][movey].piece.player is not squares[squarex][squarey].piece.player)\
+                    and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[movex][movey].piece is None) or not isinstance(squares[squarex][squarey].piece, Pieces.Pawn)):
                 squares[movex][movey] = Board.Square(movex, movey, screen, squares[squarex][squarey].piece, False)
                 squares[movex][movey].piece.update(movex, movey)
                 squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
