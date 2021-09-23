@@ -22,7 +22,6 @@ for i in range(8):
 squarex, squarey = 0, 0
 h, w = screen.get_height(), screen.get_width()
 
-
 # Game Loop
 running = True
 while running:
@@ -31,11 +30,10 @@ while running:
             mouse2x, mouse2y = pygame.mouse.get_pos()
             movex = int(8 * mouse2x / w)
             movey = int(8 * (h - mouse2y) / h)
-            # if squares[movex][movey].possibleMove:
-            #    old_piece = type(squares[squarex][squarey].piece)
-            #    squares[movex][movey] = Board.Square(movex, movey, screen, squares[squarex][squarey].piece, False)
-            #    squares[squarex][squarey].piece = squares[squarex][squarey].piece(movex, movey, squares[squarex][squarey].piece.player)
-            #    squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
+            if squares[movex][movey].possibleMove:
+                squares[movex][movey] = Board.Square(movex, movey, screen, squares[squarex][squarey].piece, False)
+                squares[movex][movey].piece.update(movex, movey)
+                squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
             squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, False)
             mousex, mousey = pygame.mouse.get_pos()
             squarex = int(8 * mousex / w)
@@ -43,6 +41,7 @@ while running:
             for i in range(8):
                 for j in range(8):
                     if squares[squarex][squarey].piece is not None:
+                        squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
                         if squares[squarex][squarey].piece.board[i][j]:
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                     else:
