@@ -9,15 +9,16 @@ class Rook:
         self.player = player
         self.image = pygame.image.load("../Images/" + player + "_rook.png")
         self.board = np.full((8, 8), False)
+        self.move = 2
         self.update(letter, number)
 
     def update(self, letter, number):
         self.letter = letter
+        self.move -= 1
         self.number = number
         for i in range(8):
             for j in range(8):
                 self.board[i][j] = self.number == j or self.letter == i
-
 
 
 class Bishop:
@@ -36,6 +37,7 @@ class Bishop:
             for j in range(8):
                 self.board[i][j] = self.number - self.letter == i - j or self.number + self.letter == i + j
 
+
 class Horse:
     def __init__(self, letter, number, player):
         self.letter = letter
@@ -44,6 +46,7 @@ class Horse:
         self.image = pygame.image.load("../Images/" + player + "_horse.png")
         self.board = np.full((8, 8), False)
         self.update(letter, number)
+
     def update(self, letter, number):
         self.letter = letter
         self.number = number
@@ -52,6 +55,7 @@ class Horse:
                 self.board[i][j] = (abs(self.number - j) == 1 and abs(self.letter - i) == 2) or (
                         abs(self.number - j) == 2 and abs(self.letter - i) == 1)
 
+
 class King:
     def __init__(self, letter, number, player):
         self.letter = letter
@@ -59,15 +63,16 @@ class King:
         self.player = player
         self.image = pygame.image.load("../Images/" + player + "_king.png")
         self.board = np.full((8, 8), False)
+        self.move = 2
         self.update(letter, number)
 
     def update(self, letter, number):
         self.letter = letter
+        self.move -= 1
         self.number = number
         for i in range(8):
             for j in range(8):
-                self.board[i][j] = abs(self.number - i) <= 1 and abs(self.letter <= 1)
-
+                self.board[i][j] = abs(self.number - j) <= 1 and abs(self.letter - i) <= 1
 
 
 class Queen:
@@ -84,8 +89,8 @@ class Queen:
         self.number = number
         for i in range(8):
             for j in range(8):
-                self.board[i][j] = self.number == i or self.letter == j or self.number - self.letter == i - j or self.number + self.letter == i + j
-
+                self.board[i][
+                    j] = self.number == i or self.letter == j or self.number - self.letter == i - j or self.number + self.letter == i + j
 
 
 class Pawn:
@@ -112,11 +117,19 @@ class Pawn:
 
 
 def starting_position(letter, number):
-    if letter == 1 and number == 5:
-        return Horse(letter, number, "black")
-    if letter == 1 and number == 3:
-        return Rook(letter, number, "black")
     if letter == 1 and number == 1:
         return Pawn(letter, number, "white")
+    if letter == 4 and number == 0:
+        return King(letter, number, "white")
+    if letter == 7 and number == 0:
+        return Rook(letter, number, "white")
+    if letter == 0 and number == 0:
+        return Rook(letter,number, "white")
+    if letter == 4 and number == 7:
+        return King(letter, number, "black")
+    if letter == 7 and number == 7:
+        return Rook(letter, number, "black")
+    if letter == 0 and number == 7:
+        return Rook(letter,number, "black")
     else:
         return None
