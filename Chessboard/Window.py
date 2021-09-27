@@ -59,6 +59,19 @@ while running:
                     squares[5][7] = Board.Square(5, 7, screen, squares[7][7].piece, False)
                     squares[5][7].piece.update(5, 7)
                     squares[7][7] = Board.Square(7, 7, screen, None, False)
+                # en passant
+                if isinstance(squares[movex][movey].piece, Pieces.Pawn) and squares[movex][
+                    movey].piece.player == "white" \
+                        and abs(movex - squarex) == 1 and squarey == 4 and movey == 5 and isinstance(
+                    squares[movex][4].piece, Pieces.Pawn):
+                    print("en")
+                    squares[movex][4] = Board.Square(movex, 4, screen, None, False)
+                if isinstance(squares[movex][movey].piece, Pieces.Pawn) and squares[movex][
+                    movey].piece.player == "black" \
+                        and abs(movex - squarex) == 1 and squarey == 3 and movey == 2 and isinstance(
+                    squares[movex][3].piece, Pieces.Pawn):
+                    squares[movex][3] = Board.Square(movex, 3, screen, None, False)
+
             squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, False)
             mousex, mousey = pygame.mouse.get_pos()
             squarex = int(8 * mousex / w)
@@ -106,16 +119,18 @@ while running:
                         if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
                             squarey].piece.player == "white" \
                                 and abs(i - squarex) == 1 and ((j - squarey == 1 \
-                                and squares[i][j].piece is not None) or (
-                                                                       squarey == 4 and j == 3 and isinstance(
-                                                                   squares[i][4].piece, Pieces.Pawn) and squares[i][4].piece.move>=0)):
+                                                                and squares[i][j].piece is not None) or (
+                                                                       squarey == 4 and j == 5 and isinstance(
+                                                                   squares[i][4].piece, Pieces.Pawn) and squares[i][
+                                                                           4].piece.move >= 0)):
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                         if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
                             squarey].piece.player == "black" \
                                 and abs(i - squarex) == 1 and ((j - squarey == -1 \
                                                                 and squares[i][j].piece is not None) or (
                                                                        squarey == 3 and j == 2 and isinstance(
-                                                                   squares[i][3].piece, Pieces.Pawn) and squares[i][3].piece.move>=0)):
+                                                                   squares[i][3].piece, Pieces.Pawn) and squares[i][
+                                                                           3].piece.move >= 0)):
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                     else:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
