@@ -34,8 +34,11 @@ while running:
             if squares[squarex][squarey].piece is not None and squares[movex][movey].possibleMove and (
                     squares[movex][movey].piece is None or
                     squares[movex][movey].piece.player is not squares[squarex][squarey].piece.player) \
-                    and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[movex][
-                movey].piece is None) or not isinstance(squares[squarex][squarey].piece, Pieces.Pawn)):
+                    and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and (squares[movex][
+                                                                                            movey].piece is None or(
+                                                                                                abs(movex - squarex) == 1 and abs(
+                                                                                            movey - squarey) == 1))) or not isinstance(
+                squares[squarex][squarey].piece, Pieces.Pawn)):
                 squares[movex][movey] = Board.Square(movex, movey, screen, squares[squarex][squarey].piece, False)
                 squares[movex][movey].piece.update(movex, movey)
                 squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
@@ -78,14 +81,16 @@ while running:
                             Castle = True
                         if isinstance(squares[squarex][squarey].piece, Pieces.King) and squares[squarex][
                             squarey].piece.player == "white" \
-                                and squares[3][0].piece is None and squares[2][0].piece is None and squares[1][0].piece is None and isinstance(
+                                and squares[3][0].piece is None and squares[2][0].piece is None and squares[1][
+                            0].piece is None and isinstance(
                             squares[0][0].piece, Pieces.Rook) \
                                 and squares[squarex][squarey].piece.move > 0 and squares[0][0].piece.move > 0:
                             squares[2][0] = Board.Square(2, 0, screen, None, True)
                             Castle = True
                         if isinstance(squares[squarex][squarey].piece, Pieces.King) and squares[squarex][
                             squarey].piece.player == "black" \
-                                and squares[3][7].piece is None and squares[2][7].piece is None and squares[1][7].piece is None and isinstance(
+                                and squares[3][7].piece is None and squares[2][7].piece is None and squares[1][
+                            7].piece is None and isinstance(
                             squares[0][7].piece, Pieces.Rook) \
                                 and squares[squarex][squarey].piece.move > 0 and squares[0][7].piece.move > 0:
                             squares[2][7] = Board.Square(2, 7, screen, None, True)
@@ -97,6 +102,12 @@ while running:
                                 and squares[squarex][squarey].piece.move > 0 and squares[7][7].piece.move > 0:
                             squares[6][7] = Board.Square(6, 7, screen, None, True)
                             Castle = True
+                        # Pawn attack
+                        if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
+                            squarey].piece.player == "white" \
+                                and abs(i - squarex) == 1 and j - squarey == 1\
+                                and squares[i][j].piece is not None:
+                            squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                     else:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
             squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, True)

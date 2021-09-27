@@ -124,12 +124,12 @@ def starting_position(letter, number):
     if letter == 7 and number == 0:
         return Rook(letter, number, "white")
     if letter == 0 and number == 0:
-        return Rook(letter,number, "white")
+        return Rook(letter, number, "white")
     if letter == 4 and number == 7:
         return King(letter, number, "black")
     if letter == 7 and number == 7:
         return Rook(letter, number, "black")
     if letter == 0 and number == 7:
-        return Rook(letter,number, "black")
+        return Rook(letter, number, "black")
     else:
         return None
