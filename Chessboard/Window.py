@@ -3,6 +3,15 @@ import Board
 import Pieces
 import numpy as np
 
+
+def endTurn():
+    global turner
+    global playerTurn
+    turner = turner ^ 1
+    playerTurn = players[turner]
+    return
+
+
 # initialize pygame
 pygame.init()
 
@@ -22,6 +31,9 @@ for i in range(8):
 squarex, squarey = 0, 0
 h, w = screen.get_height(), screen.get_width()
 Castle = False
+players = ["white", "black"]
+playerTurn = players[0]
+turner = 0
 
 # Game Loop
 running = True
@@ -31,7 +43,7 @@ while running:
             mouse2x, mouse2y = pygame.mouse.get_pos()
             movex = int(8 * mouse2x / w)
             movey = int(8 * (h - mouse2y) / h)
-            if squares[squarex][squarey].piece is not None and squares[movex][movey].possibleMove and (
+            if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player is playerTurn and squares[movex][movey].possibleMove and (
                     squares[movex][movey].piece is None or
                     squares[movex][movey].piece.player is not squares[squarex][squarey].piece.player) \
                     and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and (squares[movex][
@@ -72,7 +84,8 @@ while running:
                     squares[movex][3].piece, Pieces.Pawn):
                     squares[movex][3] = Board.Square(movex, 3, screen, None, False)
                 if isinstance(squares[movex][movey].piece, Pieces.Pawn) and (movey == 0 or movey == 7):
-                    squares[movex][movey].piece = Pieces.Queen(movex,movey, squares[movex][movey].piece.player)
+                    squares[movex][movey].piece = Pieces.Queen(movex, movey, squares[movex][movey].piece.player)
+                endTurn()
 
             squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, False)
             mousex, mousey = pygame.mouse.get_pos()
@@ -82,7 +95,7 @@ while running:
             for i in range(8):
                 for j in range(8):
 
-                    if squares[squarex][squarey].piece is not None:
+                    if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player is playerTurn:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
                         if squares[squarex][squarey].piece.board[i][j]:
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
