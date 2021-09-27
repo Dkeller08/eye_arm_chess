@@ -108,6 +108,11 @@ while running:
                                 and abs(i - squarex) == 1 and j - squarey == 1\
                                 and squares[i][j].piece is not None:
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
+                        if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
+                            squarey].piece.player == "black" \
+                                and abs(i - squarex) == 1 and j - squarey == -1\
+                                and squares[i][j].piece is not None:
+                            squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                     else:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
             squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, True)

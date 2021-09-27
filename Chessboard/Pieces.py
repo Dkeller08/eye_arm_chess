@@ -131,5 +131,7 @@ def starting_position(letter, number):
         return Rook(letter, number, "black")
     if letter == 0 and number == 7:
         return Rook(letter, number, "black")
+    if letter == 6 and number == 6:
+        return Pawn(letter, number, "black")
     else:
         return None
