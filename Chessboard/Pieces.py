@@ -100,10 +100,13 @@ class Pawn:
         self.player = player
         self.image = pygame.image.load("../Images/" + player + "_pawn.png")
         self.board = np.full((8, 8), False)
+        self.move = 2
+        self.enpessant = True
         self.update(letter, number)
 
     def update(self, letter, number):
         self.letter = letter
+        self.move -= 1
         self.number = number
         for i in range(8):
             for j in range(8):
@@ -133,5 +136,7 @@ def starting_position(letter, number):
         return Rook(letter, number, "black")
     if letter == 6 and number == 6:
         return Pawn(letter, number, "black")
+    if letter == 5 and number == 1:
+        return Pawn(letter, number, "white")
     else:
         return None

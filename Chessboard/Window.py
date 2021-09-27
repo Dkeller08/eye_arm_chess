@@ -35,7 +35,7 @@ while running:
                     squares[movex][movey].piece is None or
                     squares[movex][movey].piece.player is not squares[squarex][squarey].piece.player) \
                     and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and (squares[movex][
-                                                                                            movey].piece is None or(
+                                                                                            movey].piece is None or (
                                                                                                 abs(movex - squarex) == 1 and abs(
                                                                                             movey - squarey) == 1))) or not isinstance(
                 squares[squarex][squarey].piece, Pieces.Pawn)):
@@ -105,13 +105,17 @@ while running:
                         # Pawn attack
                         if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
                             squarey].piece.player == "white" \
-                                and abs(i - squarex) == 1 and j - squarey == 1\
-                                and squares[i][j].piece is not None:
+                                and abs(i - squarex) == 1 and ((j - squarey == 1 \
+                                and squares[i][j].piece is not None) or (
+                                                                       squarey == 4 and j == 3 and isinstance(
+                                                                   squares[i][4].piece, Pieces.Pawn) and squares[i][4].piece.move>=0)):
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                         if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
                             squarey].piece.player == "black" \
-                                and abs(i - squarex) == 1 and j - squarey == -1\
-                                and squares[i][j].piece is not None:
+                                and abs(i - squarex) == 1 and ((j - squarey == -1 \
+                                                                and squares[i][j].piece is not None) or (
+                                                                       squarey == 3 and j == 2 and isinstance(
+                                                                   squares[i][3].piece, Pieces.Pawn) and squares[i][3].piece.move>=0)):
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                     else:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
