@@ -89,8 +89,7 @@ class Queen:
         self.number = number
         for i in range(8):
             for j in range(8):
-                self.board[i][
-                    j] = self.number == i or self.letter == j or self.number - self.letter == i - j or self.number + self.letter == i + j
+                self.board[i][j] = self.number == j or self.letter == i or self.number - self.letter == j - i or self.number + self.letter == i + j
 
 
 class Pawn:

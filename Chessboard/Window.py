@@ -71,6 +71,8 @@ while running:
                         and abs(movex - squarex) == 1 and squarey == 3 and movey == 2 and isinstance(
                     squares[movex][3].piece, Pieces.Pawn):
                     squares[movex][3] = Board.Square(movex, 3, screen, None, False)
+                if isinstance(squares[movex][movey].piece, Pieces.Pawn) and (movey == 0 or movey == 7):
+                    squares[movex][movey].piece = Pieces.Queen(movex,movey, squares[movex][movey].piece.player)
 
             squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, False)
             mousex, mousey = pygame.mouse.get_pos()
