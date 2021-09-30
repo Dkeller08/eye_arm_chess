@@ -116,6 +116,8 @@ class Pawn:
                 else:
                     if self.letter == i and (j - self.number == -1 or (j - self.number == -2 and j == 4)):
                         self.board[i][j] = True
+    def enpessant_update(self):
+        self.enpessant = False
 
 
 def starting_position(letter, number):
