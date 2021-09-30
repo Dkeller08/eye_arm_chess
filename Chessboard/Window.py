@@ -20,6 +20,7 @@ pygame.display.set_caption("EyeChess")
 icon = pygame.image.load("../Images/Logo.png")
 pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((600, 600))
+pieces_block = []
 
 # Get board
 squares = np.full((8, 8), Board.Square(0, 0, screen, None, False))
@@ -43,7 +44,8 @@ while running:
             mouse2x, mouse2y = pygame.mouse.get_pos()
             movex = int(8 * mouse2x / w)
             movey = int(8 * (h - mouse2y) / h)
-            if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player is playerTurn and squares[movex][movey].possibleMove and (
+            if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player is playerTurn and \
+                    squares[movex][movey].possibleMove and (
                     squares[movex][movey].piece is None or
                     squares[movex][movey].piece.player is not squares[squarex][squarey].piece.player) \
                     and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and (squares[movex][
@@ -95,10 +97,10 @@ while running:
             for i in range(8):
                 for j in range(8):
 
-                    if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player is playerTurn:
+                    if squares[squarex][squarey].piece is not None and squares[squarex][
+                        squarey].piece.player is playerTurn:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
-                        if squares[squarex][squarey].piece.board[i][j]:
-                            squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
+
                         # Castleing
                         if isinstance(squares[squarex][squarey].piece, Pieces.King) and squares[squarex][
                             squarey].piece.player == "white" \
@@ -133,11 +135,11 @@ while running:
                         # Pawn attack
                         if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
                             squarey].piece.player == "white" \
-                                and abs(i - squarex) == 1 and ((j - squarey == 1 \
-                                                                and squares[i][j].piece is not None) or (
-                                                                       squarey == 4 and j == 5 and isinstance(
-                                                                   squares[i][4].piece, Pieces.Pawn) and squares[i][
-                                                                           4].piece.move >= 0)):
+                                and abs(i - squarex) == 1 and (
+                                (j - squarey == 1 and squares[i][j].piece is not None) or (
+                                squarey == 4 and j == 5 and isinstance(
+                            squares[i][4].piece, Pieces.Pawn) and squares[i][
+                                    4].piece.move >= 0)):
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
                         if isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and squares[squarex][
                             squarey].piece.player == "black" \
@@ -147,9 +149,53 @@ while running:
                                                                    squares[i][3].piece, Pieces.Pawn) and squares[i][
                                                                            3].piece.move >= 0)):
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
+                        if squares[squarex][squarey].piece.board[i][j]:
+                            squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
+                            if squares[i][j].piece is not None and not isinstance(squares[squarex][squarey],
+                                                                                  Pieces.Horse) and squares[i][j] is not \
+                                    squares[squarex][squarey]:
+                                pieces_block.append(squares[i][j])
                     else:
                         squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
-            squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece, True)
+            for square in pieces_block:
+                if square.letter == squarex and square.number > squarey:
+                    for i in range(square.number + 1, 8):
+                        squares[squarex][i] = Board.Square(squarex, i, screen, squares[squarey][i].piece, False)
+                if square.letter == squarex and square.number < squarey:
+                    for i in range(square.number):
+                        squares[squarex][i] = Board.Square(squarex, i, screen, squares[squarey][i].piece, False)
+                if square.letter > squarex and square.number == squarey:
+                    for i in range(square.letter + 1, 8):
+                        squares[i][squarey] = Board.Square(i, squarey, screen, squares[i][squarey].piece, False)
+                if square.letter < squarex and square.number == squarey:
+                    for i in range(square.letter):
+                        print(i)
+                        squares[i][squarey] = Board.Square(i, squarey, screen, squares[i][squarey].piece, False)
+                if square.letter + square.number == squarex + squarey and square.letter > squarex:
+                    for i in range(square.letter + 1, 8):
+                        squares[i][i - squarex + squarey] = Board.Square(i, i - squarex + squarey, screen,
+                                                                         squares[i][i - squarex + squarey].piece, False)
+                if square.letter + square.number == squarex + squarey and square.letter < squarex:
+                    for i in range(square.letter):
+                        squares[i][i - squarex + squarey] = Board.Square(i, i - squarex + squarey, screen,
+                                                                         squares[i][i - squarex + squarey].piece, False)
+                if square.letter - square.number == squarex - squarey and square.letter > squarex:
+                    for i in range(square.letter + 1, 8):
+                        squares[i][i - (squarex - squarey)] = Board.Square(i, i - (squarex - squarey), screen,
+                                                                           squares[i][
+                                                                               i - (squarex - squarey)].piece,
+                                                                           False)
+                if square.letter - square.number == squarex - squarey and square.letter < squarex:
+                    for i in range(square.letter + 1):
+                        squares[i][i - (squarex - squarey)] = Board.Square(i, i - (squarex - squarey), screen,
+                                                                           squares[i][
+                                                                               i - (squarex - squarey)].piece,
+                                                                           False)
+                if square.piece.player is playerTurn:
+                    squares[square.letter][square.number] = Board.Square(square.letter, square.number, screen,
+                                                                         squares[square.letter][square.number].piece,
+                                                                         False)
+            pieces_block = []
 
         if event.type == pygame.QUIT:
             running = False

@@ -137,5 +137,7 @@ def starting_position(letter, number):
         return Pawn(letter, number, "black")
     if letter == 5 and number == 1:
         return Pawn(letter, number, "white")
+    if letter == 3 and number == 0:
+        return Queen(letter,number,"white")
     else:
         return None
