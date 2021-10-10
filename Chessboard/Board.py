@@ -10,9 +10,9 @@ class Square:
         self.screen = screen
         self.piece = piece
         self.possibleMove = possibleMove
-        self.screenx = screen.get_width()
-        self.screeny = screen.get_height()
-        self.x = (letter / 8) * self.screenx
+        self.screenx = 4*screen.get_height()/5
+        self.screeny = 4*screen.get_height()/5
+        self.x = (letter / 8) * self.screenx + (screen.get_width() - self.screenx)/2
         self.y = ((7 / 8) - (number / 8)) * self.screeny
         if possibleMove:
             self.color = "green"
