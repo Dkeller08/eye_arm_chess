@@ -76,33 +76,16 @@ while running:
                     squares[movex][movey].piece.update(movex, movey)
                     squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
                     # Castleing
-                    if isinstance(squares[movex][movey].piece, Pieces.King) and movex == 6 and movey == 0 and Castle:
-                        squares[5][0] = Board.Square(5, 0, screen, squares[7][0].piece, False)
-                        squares[5][0].piece.update(5, 0)
-                        squares[7][0] = Board.Square(7, 0, screen, None, False)
-                    if isinstance(squares[movex][movey].piece, Pieces.King) and movex == 2 and movey == 0 and Castle:
-                        squares[3][0] = Board.Square(5, 0, screen, squares[0][0].piece, False)
-                        squares[3][0].piece.update(3, 0)
-                        squares[0][0] = Board.Square(0, 0, screen, None, False)
-                    if isinstance(squares[movex][movey].piece, Pieces.King) and movex == 2 and movey == 7 and Castle:
-                        squares[3][7] = Board.Square(5, 7, screen, squares[0][7].piece, False)
-                        squares[3][7].piece.update(3, 7)
-                        squares[0][7] = Board.Square(0, 7, screen, None, False)
-                    if isinstance(squares[movex][movey].piece, Pieces.King) and movex == 6 and movey == 7 and Castle:
-                        squares[5][7] = Board.Square(5, 7, screen, squares[7][7].piece, False)
-                        squares[5][7].piece.update(5, 7)
-                        squares[7][7] = Board.Square(7, 7, screen, None, False)
+                    rook_new, rook_old, row = rules.castle(squares, movex, movey, Pieces.King, Castle)
+                    if rook_new != 0:
+                        squares[rook_new][row] = Board.Square(rook_new, row, screen, squares[7][7].piece, False)
+                        squares[rook_new][row].piece.update(rook_old, row)
+                        squares[rook_old][row] = Board.Square(rook_old, row, screen, None, False)
                     # en passant
-                    if isinstance(squares[movex][movey].piece, Pieces.Pawn) and squares[movex][
-                        movey].piece.player == "white" \
-                            and abs(movex - squarex) == 1 and squarey == 4 and movey == 5 and isinstance(
-                        squares[movex][4].piece, Pieces.Pawn):
-                        squares[movex][4] = Board.Square(movex, 4, screen, None, False)
-                    if isinstance(squares[movex][movey].piece, Pieces.Pawn) and squares[movex][
-                        movey].piece.player == "black" \
-                            and abs(movex - squarex) == 1 and squarey == 3 and movey == 2 and isinstance(
-                        squares[movex][3].piece, Pieces.Pawn):
-                        squares[movex][3] = Board.Square(movex, 3, screen, None, False)
+                    passant_row = rules.en_passant(squares, movex, movey, squarex, squarey, Pieces.Pawn)
+                    if passant_row != 0:
+                        squares[movex][passant_row] = Board.Square(movex, passant_row, screen, None, False)
+                    # Queening
                     if isinstance(squares[movex][movey].piece, Pieces.Pawn) and (movey == 0 or movey == 7):
                         squares[movex][movey].piece = Pieces.Queen(movex, movey, squares[movex][movey].piece.player)
                     if isinstance(squares[movex][movey].piece, Pieces.Pawn):
