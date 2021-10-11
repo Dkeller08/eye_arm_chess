@@ -6,10 +6,7 @@ import rules
 
 
 def endTurn():
-    global turner
-    global playerTurn
-    global pawns_moved
-    global pieces
+    global turner, playerTurn, pawns_moved, pieces
     turner = turner ^ 1
     playerTurn = players[turner]
     for square in pawns_moved:
@@ -78,8 +75,8 @@ while running:
                     # Castleing
                     rook_new, rook_old, row = rules.castle(squares, movex, movey, Pieces.King, Castle)
                     if rook_new != 0:
-                        squares[rook_new][row] = Board.Square(rook_new, row, screen, squares[7][7].piece, False)
-                        squares[rook_new][row].piece.update(rook_old, row)
+                        squares[rook_new][row] = Board.Square(rook_new, row, screen, squares[rook_old][row].piece, False)
+                        squares[rook_new][row].piece.update(rook_new, row)
                         squares[rook_old][row] = Board.Square(rook_old, row, screen, None, False)
                     # en passant
                     passant_row = rules.en_passant(squares, movex, movey, squarex, squarey, Pieces.Pawn)

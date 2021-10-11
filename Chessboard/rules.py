@@ -97,7 +97,7 @@ def pieces_block(squarex, squarey, pieces_block, playerTurn):
 
 def castle(squares, move_x, move_y, king, Castle):
     if isinstance(squares[move_x][move_y].piece, king) and move_x == 6 and move_y == 0 and Castle:
-        return 7, 5, 0
+        return 5, 7, 0
     if isinstance(squares[move_x][move_y].piece, king) and move_x == 2 and move_y == 0 and Castle:
         return 3, 0, 0
     if isinstance(squares[move_x][move_y].piece, king) and move_x == 2 and move_y == 7 and Castle:
