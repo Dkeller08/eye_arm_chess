@@ -27,7 +27,7 @@ def endTurn():
 pygame.init()
 
 # Title and Icon
-os.environment['SDL_VIDEODRIVER'] = 'windows'
+os.environ['SDL_VIDEODRIVER'] = 'windows'
 pygame.display.set_caption("EyeChess")
 icon = pygame.image.load("../Images/Logo.png")
 pygame.display.set_icon(icon)
