@@ -185,3 +185,12 @@ genv.setCalibrationSounds('', '', '')
 
 # Request Pylink to use the Pygame window we opened above for calibration
 pylink.openGraphicsEx(genv)
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                running = False
+    pygame.display.update()
