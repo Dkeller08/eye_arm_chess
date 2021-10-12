@@ -14,6 +14,7 @@ dummy_mode = True
 # Workaround for pygame 2.0 shows black screen when running in full
 # screen mode in linux
 full_screen = True
+os.environ['SDL_VIDEODRIVER'] = 'windows'
 
 if 'Linux' in platform.platform():
     if int(pygame.version.ver[0]) > 1:
