@@ -1,6 +1,10 @@
 import pylink
 import pygame
 import sys
+import os
+import platform
+import time
+from CalibrationGraphicsPygame import CalibrationGraphics
 
 pygame.init()
 
@@ -18,41 +22,12 @@ if 'Linux' in platform.platform():
 # get the screen resolution natively supported by the monitor
 scn_width, scn_height = 0, 0
 
-# Store the parameters of all trials in a list, [cond, image]
-trials = [
-    ['cond_1', 'img_1.jpg'],
-    ['cond_2', 'img_2.jpg'],
-]
-
 # Set up EDF data file name and local data folder
 #
 # The EDF data filename should not exceed eight alphanumeric characters
 # use ONLY number 0-9, letters, and _ (underscore) in the filename
-edf_fname = 'TEST'
+edf_fname = 'Chess'
 
-# Prompt user to specify an EDF data filename
-# before we open a fullscreen window
-while True:
-    # use "raw_input" to get user input if running with Python 2.x
-    try:
-        input = raw_input
-    except NameError:
-        pass
-    prompt = '\nSpecify an EDF filename\n' + \
-             'Filename must not exceed eight alphanumeric characters.\n' + \
-             'ONLY letters, numbers and underscore are allowed.\n\n--> '
-    edf_fname = input(prompt)
-    # strip trailing characters, ignore the '.edf' extension
-    edf_fname = edf_fname.rstrip().split('.')[0]
-
-    # check if the filename is valid (length <= 8 & no special char)
-    allowed_char = ascii_letters + digits + '_'
-    if not all([c in allowed_char for c in edf_fname]):
-        print('ERROR: Invalid EDF filename')
-    elif len(edf_fname) > 8:
-        print('ERROR: EDF filename should not exceed 8 characters')
-    else:
-        break
 
 # Set up a folder to store the EDF data files and the associated resources
 # e.g., files defining the interest areas used in each trial
@@ -155,7 +130,7 @@ el_tracker.sendCommand("button_function 5 'accept_target_fixation'")
 # open a Pygame window
 win = None
 if full_screen:
-    win = pygame.display.set_mode((0, 0), FULLSCREEN | DOUBLEBUF)
+    win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN | pygame.DOUBLEBUF)
 else:
     win = pygame.display.set_mode((0, 0), 0)
 
