@@ -62,8 +62,8 @@ class CalibrationGraphics(pylink.EyeLinkCustomDisplay):
         if not DISABLE_AUDIO:
             try:
                 self._target_beep = pygame.mixer.Sound("type.wav")
-                self._done_beep = pygame.mixer.Sound("../../fixationWindow_fastSamples/qbeep.wav")
-                self._error_beep = pygame.mixer.Sound("../../fixationWindow_fastSamples/error.wav")
+                self._done_beep = pygame.mixer.Sound("qbeep.wav")
+                self._error_beep = pygame.mixer.Sound("error.wav")
             except Exception as e:
                 print ('Failed to load audio: '+ str(e))
                 #we failed to load audio, so disable it
@@ -160,7 +160,7 @@ class CalibrationGraphics(pylink.EyeLinkCustomDisplay):
 
         # done beep
         if done_beep == '':
-            self._done_beep = pygame.mixer.Sound("../../fixationWindow_fastSamples/qbeep.wav")
+            self._done_beep = pygame.mixer.Sound("qbeep.wav")
         elif done_beep == 'off':
             self._done_beep = None
         else:
@@ -168,7 +168,7 @@ class CalibrationGraphics(pylink.EyeLinkCustomDisplay):
 
         # error beep
         if error_beep == '':
-            self._error_beep = pygame.mixer.Sound("../../fixationWindow_fastSamples/error.wav")
+            self._error_beep = pygame.mixer.Sound("error.wav")
         elif error_beep == 'off':
             self._error_beep = None
         else:
