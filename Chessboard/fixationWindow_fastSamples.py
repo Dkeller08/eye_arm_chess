@@ -394,7 +394,7 @@ def run_trial(trial_pars, trial_index, should_recal):
     cond, pic = trial_pars
 
     # load the image to display, here we stretch the image to fill full screen
-    img = pygame.image.load('./images/' + pic)
+    img = pygame.image.load('../images/Logo.png')
     img = pygame.transform.scale(img, (scn_width, scn_height))
 
     # get the currently active window
