@@ -82,7 +82,7 @@ trials = [
 #
 # The EDF data filename should not exceed eight alphanumeric characters
 # use ONLY number 0-9, letters, and _ (underscore) in the filename
-edf_fname = 'CHESS.edf'
+edf_fname = 'chess.edf'
 
 
 # Set up a folder to store the EDF data files and the associated resources
