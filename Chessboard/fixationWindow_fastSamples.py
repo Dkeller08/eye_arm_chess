@@ -58,7 +58,7 @@ if len(script_path) != 0:
 pygame.init()
 
 # Set this variable to True to run the script in "Dummy Mode"
-dummy_mode = True
+dummy_mode = False
 
 #Workaround for pygame 2.0 shows black screen when running in full 
 #screen mode in linux
