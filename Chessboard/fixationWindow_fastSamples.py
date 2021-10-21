@@ -45,7 +45,7 @@ import sys
 import random
 import time
 from pygame.locals import *
-from Pygame_examples.EyelinkChess.Chessboard.CalibrationGraphicsPygame import CalibrationGraphics
+from CalibrationGraphicsPygame import CalibrationGraphics
 from math import fabs
 from string import ascii_letters, digits
 
