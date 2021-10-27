@@ -77,7 +77,8 @@ while running:
                     # Castleing
                     rook_new, rook_old, row = rules.castle(squares, movex, movey, Pieces.King, Castle)
                     if rook_new != 0:
-                        squares[rook_new][row] = Board.Square(rook_new, row, screen, squares[rook_old][row].piece, False)
+                        squares[rook_new][row] = Board.Square(rook_new, row, screen, squares[rook_old][row].piece,
+                                                              False)
                         squares[rook_new][row].piece.update(rook_new, row)
                         squares[rook_old][row] = Board.Square(rook_old, row, screen, None, False)
                     # en passant
@@ -101,15 +102,17 @@ while running:
                 # selecting tiles
                 for i in range(8):
                     for j in range(8):
-                        if squares[squarex][squarey].piece is not None and squares[squarex][
-                            squarey].piece.player is playerTurn:
+                        if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player \
+                                is playerTurn:
                             squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
                             # Castleing
-                            castle_x, castle_y, castle_possible = rules.castle_possible(squares, squarex, squarey,
-                                                                                        Pieces.King, Pieces.Rook)
-                            if castle_possible:
-                                squares[castle_x][castle_y] = Board.Square(castle_x, castle_y, screen, None, True)
-                                Castle = True
+                            pos_list = rules.castle_possible(squares, squarex, squarey,
+                                                             Pieces.King, Pieces.Rook)
+                            for pos in pos_list:
+                                castle_x, castle_y, castle_possible = pos
+                                if castle_possible:
+                                    squares[castle_x][castle_y] = Board.Square(castle_x, castle_y, screen, None, True)
+                                    Castle = True
 
                             # Pawn attack
                             pawn_attack = rules.pawn_attack(squares, squarex, squarey, Pieces.Pawn, i, j, playerTurn)

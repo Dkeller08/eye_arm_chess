@@ -1,32 +1,32 @@
 def castle_possible(squares, squarex, squarey, king, rook):
+    pos = []
     if isinstance(squares[squarex][squarey].piece, king) and squares[squarex][
         squarey].piece.player == "white" \
             and squares[5][0].piece is None and squares[6][0].piece is None and isinstance(
         squares[7][0].piece, rook) \
             and squares[squarex][squarey].piece.move > 0 and squares[7][0].piece.move > 0:
-        return 6, 0, True
+        pos.append([6, 0, True])
     if isinstance(squares[squarex][squarey].piece, king) and squares[squarex][
         squarey].piece.player == "white" \
             and squares[3][0].piece is None and squares[2][0].piece is None and squares[1][
         0].piece is None and isinstance(
         squares[0][0].piece, rook) \
             and squares[squarex][squarey].piece.move > 0 and squares[0][0].piece.move > 0:
-        return 2, 0, True
+        pos.append([2, 0, True])
     if isinstance(squares[squarex][squarey].piece, king) and squares[squarex][
         squarey].piece.player == "black" \
             and squares[3][7].piece is None and squares[2][7].piece is None and squares[1][
         7].piece is None and isinstance(
         squares[0][7].piece, rook) \
             and squares[squarex][squarey].piece.move > 0 and squares[0][7].piece.move > 0:
-        return 2, 7, True
+        pos.append([2, 7, True])
     if isinstance(squares[squarex][squarey].piece, king) and squares[squarex][
         squarey].piece.player == "black" \
             and squares[5][7].piece is None and squares[6][7].piece is None and isinstance(
         squares[7][7].piece, rook) \
             and squares[squarex][squarey].piece.move > 0 and squares[7][7].piece.move > 0:
-        return 6, 7, True
-    else:
-        return 0, 0, False
+        pos.append([6, 7, True])
+    return pos
 
 
 def pawn_attack(squares, squarex, squarey, pawn, i, j, player_turn):
