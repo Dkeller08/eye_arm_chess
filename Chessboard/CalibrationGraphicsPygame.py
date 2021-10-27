@@ -529,6 +529,7 @@ def main():
 
     # initialize Pygame
     pygame.init()
+    os.environ['SDL_VIDEODRIVER'] = 'windows'
 
     # get the screen resolution natively supported by the monitor
     disp = pylink.getDisplayInformation()
