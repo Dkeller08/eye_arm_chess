@@ -1,6 +1,7 @@
 import pylink
 import pygame
 import os
+import Window
 
 from pygame import FULLSCREEN, DOUBLEBUF
 
@@ -63,3 +64,5 @@ pylink.openGraphicsEx(genv)
 
 # calibrate the tracker
 el_tracker.doTrackerSetup()
+
+Window.board(win)
