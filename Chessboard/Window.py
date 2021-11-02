@@ -25,6 +25,32 @@ def board(screen):
                 if squares[ii][jj].piece is not None:
                     pieces.append(squares[ii][jj])
         return
+
+    def abort_trial():
+        """Ends recording
+
+        We add 100 msec to catch final events
+        """
+
+        # get the currently active tracker object (connection)
+        el_tracker = pylink.getEYELINK()
+
+        # Stop recording
+        if el_tracker.isRecording():
+            # add 100 ms to catch final trial events
+            pylink.pumpDelay(100)
+            el_tracker.stopRecording()
+
+        # clear the screen
+        surf = pygame.display.get_surface()
+        surf.fill((128, 128, 128))
+        pygame.display.flip()
+        # Send a message to clear the Data Viewer screen
+        el_tracker.sendMessage('!V CLEAR 128 128 128')
+
+        # send a message to mark trial end
+        el_tracker.sendMessage('TRIAL_RESULT %d' % pylink.TRIAL_ERROR)
+
     # # initialize pygame
     # pygame.init()
     #
@@ -193,9 +219,11 @@ def board(screen):
 
             if event.type == pygame.QUIT:
                 running = False
+                abort_trial()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     running = False
+                    abort_trial()
 
         for i in range(8):
             for j in range(8):
