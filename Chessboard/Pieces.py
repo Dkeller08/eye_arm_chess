@@ -89,7 +89,8 @@ class Queen:
         self.number = number
         for i in range(8):
             for j in range(8):
-                self.board[i][j] = self.number == j or self.letter == i or self.number - self.letter == j - i or self.number + self.letter == i + j
+                self.board[i][
+                    j] = self.number == j or self.letter == i or self.number - self.letter == j - i or self.number + self.letter == i + j
 
 
 class Pawn:
@@ -116,30 +117,36 @@ class Pawn:
                 else:
                     if self.letter == i and (j - self.number == -1 or (j - self.number == -2 and j == 4)):
                         self.board[i][j] = True
+
     def enpessant_update(self):
         self.enpessant = False
 
 
 def starting_position(letter, number):
-    if letter == 1 and number == 1:
+    if number == 1:
         return Pawn(letter, number, "white")
     if letter == 4 and number == 0:
         return King(letter, number, "white")
-    if letter == 7 and number == 0:
+    if letter == 3 and number == 0:
+        return Queen(letter, number, "white")
+    if (letter == 7 or letter == 0) and number == 0:
         return Rook(letter, number, "white")
-    if letter == 0 and number == 0:
-        return Rook(letter, number, "white")
+    if (letter == 1 or letter == 6) and number == 0:
+        return Horse(letter, number, "white")
+    if (letter == 2 or letter == 5) and number == 0:
+        return Bishop(letter, number, "white")
+
+    if number == 6:
+        return Pawn(letter, number, "black")
     if letter == 4 and number == 7:
         return King(letter, number, "black")
-    if letter == 7 and number == 7:
+    if letter == 3 and number == 7:
+        return Queen(letter, number, "black")
+    if (letter == 7 or letter == 0) and number == 7:
         return Rook(letter, number, "black")
-    if letter == 0 and number == 7:
-        return Rook(letter, number, "black")
-    if letter == 6 and number == 6:
-        return Pawn(letter, number, "black")
-    if letter == 5 and number == 1:
-        return Pawn(letter, number, "white")
-    if letter == 3 and number == 0:
-        return Queen(letter,number,"white")
+    if (letter == 6 or letter == 1) and number == 7:
+        return Horse(letter, number, "black")
+    if (letter == 5 or letter == 2) and number == 7:
+        return Bishop(letter, number, "black")
     else:
         return None
