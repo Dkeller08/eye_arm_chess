@@ -78,7 +78,7 @@ def board(screen):
     white = (255, 255, 255)
     black = (0, 0, 0)
     minimum_duration = 3000
-    minimum_move_duration = 1000
+    minimum_move_duration = 500
     new_sample = None
     old_sample = None
     in_hit_region = False
