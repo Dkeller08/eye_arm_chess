@@ -7,24 +7,21 @@ import pylink
 import os
 
 
-
-
 def board(screen):
-    def endTurn():
-        global turner, playerTurn, pawns_moved, pieces
-        turner = turner ^ 1
-        playerTurn = players[turner]
-        for square in pawns_moved:
-            if square.piece.player is playerTurn:
+    def endTurn(def_turner, def_pawns_moved):
+        def_turner = def_turner ^ 1
+        def_playerTurn = players[def_turner]
+        for square in def_pawns_moved:
+            if square.piece.player is def_playerTurn:
                 if isinstance(squares[square.letter][square.number].piece, Pieces.Pawn):
                     squares[square.letter][square.number].piece.enpessant_update()
-                pawns_moved.pop(0)
-        pieces = []
+                def_pawns_moved.pop(0)
+        def_pieces = []
         for ii in range(8):
             for jj in range(8):
                 if squares[ii][jj].piece is not None:
-                    pieces.append(squares[ii][jj])
-        return
+                    def_pieces.append(squares[ii][jj])
+        return def_turner, def_playerTurn, def_pawns_moved, def_pieces
 
     def abort_trial():
         """Ends recording
@@ -51,16 +48,6 @@ def board(screen):
         # send a message to mark trial end
         el_tracker.sendMessage('TRIAL_RESULT %d' % pylink.TRIAL_ERROR)
 
-    # # initialize pygame
-    # pygame.init()
-    #
-    # # Title and Icon
-    # os.environ['SDL_VIDEODRIVER'] = 'windows'
-    # pygame.display.set_caption("EyeChess")
-    # icon = pygame.image.load("../Images/Logo.png")
-    # pygame.display.set_icon(icon)
-    # screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-
     el_tracker = pylink.getEYELINK()
     el_tracker.setOfflineMode()
     el_tracker.sendCommand('clear_screen 0')
@@ -70,7 +57,6 @@ def board(screen):
         print("ERROR:", error)
         return pylink.TRIAL_ERROR
     pylink.pumpDelay(100)
-
 
     # Get board
     squares = np.full((8, 8), Board.Square(0, 0, screen, None, False))
@@ -119,7 +105,7 @@ def board(screen):
 
                     # break the while loop if the current gaze position is
                     # in a 120 x 120 pixels region around the screen centered
-                    if min(l_y,r_y) >= width_board:
+                    if min(l_y, r_y) >= width_board:
                         # record gaze start time
                         if not in_hit_region:
                             if gaze_start == -1:
@@ -130,7 +116,8 @@ def board(screen):
                             gaze_dur = pygame.time.get_ticks() - gaze_start
                             if gaze_dur > minimum_duration:
                                 trigger_fired = True
-                    elif max(l_y, r_y) <= width_board and (w - width_board) / 2 <= (l_x+r_x)/2 <= width_board + (w - width_board) / 2 and trigger_fired:
+                    elif max(l_y, r_y) <= width_board and (w - width_board) / 2 <= (l_x + r_x) / 2 <= width_board + (
+                            w - width_board) / 2 and trigger_fired:
                         move_x_1 = int(8 * ((l_x + r_x) / 2 - (w - width_board) / 2) / width_board)
                         move_y_1 = int(8 * (width_board - (l_y + r_y) / 2) / width_board)
                         if move_x_1 == move_x_2 and move_y_1 == move_y_2:
@@ -174,7 +161,7 @@ def board(screen):
                                                                                    squares[movex][movey].piece.player)
                                     if isinstance(squares[movex][movey].piece, Pieces.Pawn):
                                         pawns_moved.append(squares[movex][movey])
-                                    endTurn()
+                                    turner, playerTurn, pawns_moved, pieces = endTurn(turner, pawns_moved)
 
                                 # setting new veriables
                                 squares[squarex][squarey] = Board.Square(squarex, squarey, screen,
@@ -254,7 +241,8 @@ def board(screen):
         image_white = pygame.transform.scale(pygame.image.load("../Images/white.png"), (w, int(h / 5)))
         screen.blit(image_white, (0, int(4 * h / 5 - 1)))
         if in_hit_region:
-            image_green = pygame.transform.scale(pygame.image.load("../Images/green.png"), (w*min(gaze_dur/minimum_duration, 1), int(h / 5)))
+            image_green = pygame.transform.scale(pygame.image.load("../Images/green.png"),
+                                                 (w * min(gaze_dur / minimum_duration, 1), int(h / 5)))
             screen.blit(image_green, (0, int(4 * h / 5 - 1)))
         font = pygame.font.Font('freesansbold.ttf', 40)
         text = font.render('Look here if you are ready to input a move', True, black, white)
