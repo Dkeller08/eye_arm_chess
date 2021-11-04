@@ -96,6 +96,7 @@ def board(screen):
     old_sample = None
     in_hit_region = False
     gaze_start = -1
+    trigger_fired = False
     move_x_2 = 0
     move_y_2 = 0
     move_start = None
