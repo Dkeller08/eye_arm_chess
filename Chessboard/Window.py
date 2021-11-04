@@ -240,7 +240,7 @@ def board(screen):
                     screen.blit(image_piece, (int(squares[i][j].x), int(squares[i][j].y)))
         image_white = pygame.transform.scale(pygame.image.load("../Images/white.png"), (w, int(h / 5)))
         screen.blit(image_white, (0, int(4 * h / 5 - 1)))
-        if in_hit_region:
+        if in_hit_region or trigger_fired:
             image_green = pygame.transform.scale(pygame.image.load("../Images/green.png"),
                                                  (w * min(gaze_dur / minimum_duration, 1), int(h / 5)))
             screen.blit(image_green, (0, int(4 * h / 5 - 1)))
