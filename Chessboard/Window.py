@@ -251,3 +251,5 @@ def board(screen):
         textRect.center = (w // 2, 9 * h // 10)
         screen.blit(text, textRect)
         pygame.display.update()
+        image_black = pygame.transform.scale(pygame.image.load("../Images/black.png"), (30, 30))
+        screen.blit(image_black, ((r_x+l_x)/2, (l_y+r_y)/2))
