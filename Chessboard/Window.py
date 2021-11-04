@@ -78,6 +78,7 @@ def board(screen):
     white = (255, 255, 255)
     black = (0, 0, 0)
     minimum_duration = 3000
+    minimum_move_duration = 1000
     new_sample = None
     old_sample = None
     in_hit_region = False
@@ -121,7 +122,7 @@ def board(screen):
                         if move_x_1 == move_x_2 and move_y_1 == move_y_2:
                             if move_start is None:
                                 move_start = pygame.time.get_ticks()
-                            elif pygame.time.get_ticks() - move_start > minimum_duration:
+                            elif pygame.time.get_ticks() - move_start > minimum_move_duration:
                                 movex = move_x_1
                                 movey = move_y_1
                                 # if statement to move pieces
