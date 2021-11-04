@@ -103,8 +103,6 @@ def board(screen):
 
                     l_x, l_y = new_sample.getLeftEye().getGaze()
 
-                    # break the while loop if the current gaze position is
-                    # in a 120 x 120 pixels region around the screen centered
                     if min(l_y, r_y) >= width_board:
                         # record gaze start time
                         if not in_hit_region:
@@ -112,7 +110,7 @@ def board(screen):
                                 gaze_start = pygame.time.get_ticks()
                                 in_hit_region = True
                         # check the gaze duration and fire
-                        if in_hit_region:
+                        if in_hit_region and not trigger_fired:
                             gaze_dur = pygame.time.get_ticks() - gaze_start
                             if gaze_dur > minimum_duration:
                                 trigger_fired = True
@@ -162,6 +160,7 @@ def board(screen):
                                     if isinstance(squares[movex][movey].piece, Pieces.Pawn):
                                         pawns_moved.append(squares[movex][movey])
                                     turner, playerTurn, pawns_moved, pieces = endTurn(turner, pawns_moved)
+                                    trigger_fired = False
 
                                 # setting new veriables
                                 squares[squarex][squarey] = Board.Square(squarex, squarey, screen,
@@ -215,7 +214,8 @@ def board(screen):
                                                                                  squares[blocked_x][blocked_y].piece,
                                                                                  False)
                                 pieces_block = []
-
+                        else:
+                            move_start = None
                         move_x_2 = move_x_1
                         move_y_2 = move_y_1
                     else:  # gaze outside the hit region, reset variables
