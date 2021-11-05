@@ -117,7 +117,7 @@ def board(screen):
                     w - width_board) / 2 and trigger_fired:
                 move_x_1 = int(8 * ((l_x + r_x) / 2 - (w - width_board) / 2) / width_board)
                 move_y_1 = int(8 * (width_board - (l_y + r_y) / 2) / width_board)
-                if move_x_1 == move_x_2 and move_y_1 == move_y_2:
+                if move_x_1 == move_x_2 and move_y_1 == move_y_2 and move_x_1 < 8 and move_y_1 < 8:
                     if move_start is None:
                         move_start = pygame.time.get_ticks()
                     elif pygame.time.get_ticks() - move_start > minimum_move_duration:
