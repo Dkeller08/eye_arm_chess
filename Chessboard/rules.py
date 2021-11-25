@@ -78,8 +78,8 @@ def pieces_block(squarex, squarey, pieces_block, playerTurn):
                     blocked_moves.append([i, i - squarex + squarey])
         if square.letter + square.number == squarex + squarey and square.letter < squarex:
             for i in range(square.letter):
-                if i - squarex + squarey < 8:
-                    blocked_moves.append([i, i - squarex + squarey])
+                if abs(i - squarex + squarey) < 8:
+                    blocked_moves.append([i, abs(i - squarex + squarey)])
         if square.letter - square.number == squarex - squarey and square.letter > squarex:
             for i in range(square.letter + 1, 8):
                 if i - (squarex - squarey) < 8:
