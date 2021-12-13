@@ -23,6 +23,109 @@ def board(screen, Dummy):
                     def_pieces.append(squares[ii][jj])
         return def_turner, def_playerTurn, def_pawns_moved, def_pieces
 
+    def check_moves(def_squares, def_movex, def_movey, def_squarex, def_squarey, def_playerTurn, def_turner,
+                    def_pawns_moved, def_Castle, def_selected_string):
+        def_move_string = ""
+        if def_squares[def_squarex][def_squarey].piece is not None and def_squares[def_squarex][
+            def_squarey].piece.player is def_playerTurn and \
+                def_squares[def_movex][def_movey].possibleMove and def_squares[def_movex][def_movey] is not \
+                def_squares[def_squarex][def_squarey] \
+                and (
+                (isinstance(def_squares[def_squarex][def_squarey].piece, Pieces.Pawn) and (def_squares[def_movex][
+                                                                                               def_movey].piece is None or (
+                                                                                                   abs(def_movex - def_squarex) == 1 and abs(
+                                                                                               def_movey - def_squarey) == 1))) or not isinstance(
+            def_squares[def_squarex][def_squarey].piece, Pieces.Pawn)):
+            if def_squares[def_movex][def_movey].piece is None:
+                def_move_string = def_selected_string + str(def_movex) + str(def_movey)
+            else:
+                def_move_string = def_selected_string + "x" + type(def_squares[def_movex][def_movey].piece).__name__[
+                    0] + str(def_movex) + str(def_movey)
+            def_squares[def_movex][def_movey] = Board.Square(def_movex, def_movey, screen,
+                                                             def_squares[def_squarex][def_squarey].piece, False)
+            def_squares[def_movex][def_movey].piece.update(def_movex, def_movey)
+            def_squares[def_squarex][def_squarey] = Board.Square(def_squarex, def_squarey, screen, None, False)
+            # Castleing
+            rook_new, rook_old, row = rules.castle(def_squares, def_movex, def_movey, Pieces.King, def_Castle)
+            if rook_new != 0:
+                def_squares[rook_new][row] = Board.Square(rook_new, row, screen,
+                                                          def_squares[rook_old][row].piece,
+                                                          False)
+                def_squares[rook_new][row].piece.update(rook_new, row)
+                def_squares[rook_old][row] = Board.Square(rook_old, row, screen, None, False)
+                def_move_string = "O" + def_selected_string + "R" + str(rook_old) + str(row)
+            # en passant
+            passant_row = rules.en_passant(def_squares, def_movex, def_movey, def_squarex, def_squarey, Pieces.Pawn)
+            if passant_row != 0:
+                def_move_string = def_selected_string + "e.p." + str(def_movex) + str(def_movey)
+                def_squares[def_movex][passant_row] = Board.Square(def_movex, passant_row, screen, None,
+                                                                   False)
+            # Queening
+            if isinstance(def_squares[def_movex][def_movey].piece, Pieces.Pawn) and (
+                    def_movey == 0 or def_movey == 7):
+                def_move_string = def_move_string + "=Q"
+                def_squares[def_movex][def_movey].piece = Pieces.Queen(def_movex, def_movey,
+                                                                       def_squares[def_movex][def_movey].piece.player)
+            if isinstance(def_squares[def_movex][def_movey].piece, Pieces.Pawn):
+                def_pawns_moved.append(def_squares[def_movex][def_movey])
+            def_turner, def_playerTurn, def_pawns_moved, pieces = endTurn(def_turner, def_pawns_moved)
+            trigger_fired = False
+
+        # setting new veriables
+        def_squares[def_squarex][def_squarey] = Board.Square(def_squarex, def_squarey, screen,
+                                                             def_squares[def_squarex][def_squarey].piece,
+                                                             False)
+        def_squarex = def_movex
+        def_squarey = def_movey
+        def_Castle = False
+
+        # selecting tiles
+        for i in range(8):
+            for j in range(8):
+                if def_squares[def_squarex][def_squarey].piece is not None and def_squares[def_squarex][
+                    def_squarey].piece.player \
+                        is def_playerTurn:
+                    def_selected_string = type(def_squares[def_squarex][def_squarey].piece).__name__[0] + str(
+                        def_squarex) + str(def_squarey)
+                    def_squares[i][j] = Board.Square(i, j, screen, def_squares[i][j].piece, False)
+                    # Castleing
+                    pos_list = rules.castle_possible(def_squares, def_squarex, def_squarey,
+                                                     Pieces.King, Pieces.Rook)
+                    for pos in pos_list:
+                        castle_x, castle_y, castle_possible = pos
+                        if castle_possible:
+                            def_squares[castle_x][castle_y] = Board.Square(castle_x, castle_y,
+                                                                           screen, None, True)
+                            def_Castle = True
+
+                    # Pawn attack
+                    pawn_attack = rules.pawn_attack(def_squares, def_squarex, def_squarey, Pieces.Pawn, i,
+                                                    j, def_playerTurn)
+                    if pawn_attack:
+                        def_squares[i][j] = Board.Square(i, j, screen, def_squares[i][j].piece, True)
+
+                    # select possible moves
+                    if def_squares[def_squarex][def_squarey].piece.board[i][j]:
+                        def_squares[i][j] = Board.Square(i, j, screen, def_squares[i][j].piece, True)
+                        # Add pieces that are in the way to pieces_block list
+                        if def_squares[i][j].piece is not None and not isinstance(
+                                def_squares[def_squarex][def_squarey],
+                                Pieces.Horse) and def_squares[i][
+                            j] is not \
+                                def_squares[def_squarex][def_squarey]:
+                            pieces_block.append(def_squares[i][j])
+                else:
+                    def_squares[i][j] = Board.Square(i, j, screen, def_squares[i][j].piece, False)
+
+        # making sure pieces cannot go over other pieces
+        blocked_moves = rules.pieces_block(def_squarex, def_squarey, pieces_block, def_playerTurn)
+        for i in range(len(blocked_moves)):
+            blocked_x, blocked_y = blocked_moves[i][0], blocked_moves[i][1]
+            def_squares[blocked_x][blocked_y] = Board.Square(blocked_x, blocked_y, screen,
+                                                             def_squares[blocked_x][blocked_y].piece,
+                                                             False)
+        return def_squares, def_squarex, def_squarey, def_playerTurn, def_turner, def_pawns_moved, def_Castle, def_selected_string, def_move_string
+
     def abort_trial():
         """Ends recording
 
@@ -88,6 +191,7 @@ def board(screen, Dummy):
     move_x_2 = 0
     move_y_2 = 0
     move_start = None
+    selected_string = ""
 
     # Game Loop
     running = True
@@ -126,94 +230,16 @@ def board(screen, Dummy):
                             movex = move_x_1
                             movey = move_y_1
                             # if statement to move pieces
-                            if squares[squarex][squarey].piece is not None and squares[squarex][
-                                squarey].piece.player is playerTurn and \
-                                    squares[movex][movey].possibleMove and squares[movex][movey] is not \
-                                    squares[squarex][squarey] \
-                                    and (
-                                    (isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and (squares[movex][
-                                                                                                       movey].piece is None or (
-                                                                                                           abs(movex - squarex) == 1 and abs(
-                                                                                                       movey - squarey) == 1))) or not isinstance(
-                                squares[squarex][squarey].piece, Pieces.Pawn)):
-                                squares[movex][movey] = Board.Square(movex, movey, screen,
-                                                                     squares[squarex][squarey].piece, False)
-                                squares[movex][movey].piece.update(movex, movey)
-                                squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
-                                # Castleing
-                                rook_new, rook_old, row = rules.castle(squares, movex, movey, Pieces.King, Castle)
-                                if rook_new != 0:
-                                    squares[rook_new][row] = Board.Square(rook_new, row, screen,
-                                                                          squares[rook_old][row].piece,
-                                                                          False)
-                                    squares[rook_new][row].piece.update(rook_new, row)
-                                    squares[rook_old][row] = Board.Square(rook_old, row, screen, None, False)
-                                # en passant
-                                passant_row = rules.en_passant(squares, movex, movey, squarex, squarey, Pieces.Pawn)
-                                if passant_row != 0:
-                                    squares[movex][passant_row] = Board.Square(movex, passant_row, screen, None,
-                                                                               False)
-                                # Queening
-                                if isinstance(squares[movex][movey].piece, Pieces.Pawn) and (
-                                        movey == 0 or movey == 7):
-                                    squares[movex][movey].piece = Pieces.Queen(movex, movey,
-                                                                               squares[movex][movey].piece.player)
-                                if isinstance(squares[movex][movey].piece, Pieces.Pawn):
-                                    pawns_moved.append(squares[movex][movey])
-                                turner, playerTurn, pawns_moved, pieces = endTurn(turner, pawns_moved)
-                                trigger_fired = False
-
-                            # setting new veriables
-                            squares[squarex][squarey] = Board.Square(squarex, squarey, screen,
-                                                                     squares[squarex][squarey].piece,
-                                                                     False)
-                            squarex = movex
-                            squarey = movey
-                            Castle = False
-
-                            # selecting tiles
-                            for i in range(8):
-                                for j in range(8):
-                                    if squares[squarex][squarey].piece is not None and squares[squarex][
-                                        squarey].piece.player \
-                                            is playerTurn:
-                                        squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
-                                        # Castleing
-                                        pos_list = rules.castle_possible(squares, squarex, squarey,
-                                                                         Pieces.King, Pieces.Rook)
-                                        for pos in pos_list:
-                                            castle_x, castle_y, castle_possible = pos
-                                            if castle_possible:
-                                                squares[castle_x][castle_y] = Board.Square(castle_x, castle_y,
-                                                                                           screen, None, True)
-                                                Castle = True
-
-                                        # Pawn attack
-                                        pawn_attack = rules.pawn_attack(squares, squarex, squarey, Pieces.Pawn, i,
-                                                                        j, playerTurn)
-                                        if pawn_attack:
-                                            squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
-
-                                        # select possible moves
-                                        if squares[squarex][squarey].piece.board[i][j]:
-                                            squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
-                                            # Add pieces that are in the way to pieces_block list
-                                            if squares[i][j].piece is not None and not isinstance(
-                                                    squares[squarex][squarey],
-                                                    Pieces.Horse) and squares[i][
-                                                j] is not \
-                                                    squares[squarex][squarey]:
-                                                pieces_block.append(squares[i][j])
-                                    else:
-                                        squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
-
-                            # making sure pieces cannot go over other pieces
-                            blocked_moves = rules.pieces_block(squarex, squarey, pieces_block, playerTurn)
-                            for i in range(len(blocked_moves)):
-                                blocked_x, blocked_y = blocked_moves[i][0], blocked_moves[i][1]
-                                squares[blocked_x][blocked_y] = Board.Square(blocked_x, blocked_y, screen,
-                                                                             squares[blocked_x][blocked_y].piece,
-                                                                             False)
+                            squares, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                                squares,
+                                movex,
+                                movey,
+                                squarex,
+                                squarey,
+                                playerTurn,
+                                turner,
+                                pawns_moved,
+                                Castle, selected_string)
                             pieces_block = []
                     else:
                         move_start = None
@@ -233,85 +259,16 @@ def board(screen, Dummy):
                     movex = int(8 * (mousex - (w - width_board) / 2) / width_board)
                     movey = int(8 * (width_board - mousey) / width_board)
                     # if statement to move pieces
-                    if squares[squarex][squarey].piece is not None and squares[squarex][
-                        squarey].piece.player is playerTurn and \
-                            squares[movex][movey].possibleMove and squares[movex][movey] is not squares[squarex][
-                        squarey] \
-                            and ((isinstance(squares[squarex][squarey].piece, Pieces.Pawn) and (squares[movex][
-                                                                                                    movey].piece is None or (
-                                                                                                        abs(movex - squarex) == 1 and abs(
-                                                                                                    movey - squarey) == 1))) or not isinstance(
-                        squares[squarex][squarey].piece, Pieces.Pawn)):
-                        squares[movex][movey] = Board.Square(movex, movey, screen, squares[squarex][squarey].piece,
-                                                             False)
-                        squares[movex][movey].piece.update(movex, movey)
-                        squares[squarex][squarey] = Board.Square(squarex, squarey, screen, None, False)
-                        # Castleing
-                        rook_new, rook_old, row = rules.castle(squares, movex, movey, Pieces.King, Castle)
-                        if rook_new != 0:
-                            squares[rook_new][row] = Board.Square(rook_new, row, screen, squares[rook_old][row].piece,
-                                                                  False)
-                            squares[rook_new][row].piece.update(rook_new, row)
-                            squares[rook_old][row] = Board.Square(rook_old, row, screen, None, False)
-                        # en passant
-                        passant_row = rules.en_passant(squares, movex, movey, squarex, squarey, Pieces.Pawn)
-                        if passant_row != 0:
-                            squares[movex][passant_row] = Board.Square(movex, passant_row, screen, None, False)
-                        # Queening
-                        if isinstance(squares[movex][movey].piece, Pieces.Pawn) and (movey == 0 or movey == 7):
-                            squares[movex][movey].piece = Pieces.Queen(movex, movey, squares[movex][movey].piece.player)
-                        if isinstance(squares[movex][movey].piece, Pieces.Pawn):
-                            pawns_moved.append(squares[movex][movey])
-                        turner, playerTurn, pawns_moved, pieces = endTurn(turner,pawns_moved)
-
-                    # setting new veriables
-                    squares[squarex][squarey] = Board.Square(squarex, squarey, screen, squares[squarex][squarey].piece,
-                                                             False)
-                    squarex = movex
-                    squarey = movey
-                    Castle = False
-
-                    # selecting tiles
-                    for i in range(8):
-                        for j in range(8):
-                            if squares[squarex][squarey].piece is not None and squares[squarex][squarey].piece.player \
-                                    is playerTurn:
-                                squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
-                                # Castleing
-                                pos_list = rules.castle_possible(squares, squarex, squarey,
-                                                                 Pieces.King, Pieces.Rook)
-                                for pos in pos_list:
-                                    castle_x, castle_y, castle_possible = pos
-                                    if castle_possible:
-                                        squares[castle_x][castle_y] = Board.Square(castle_x, castle_y, screen, None,
-                                                                                   True)
-                                        Castle = True
-
-                                # Pawn attack
-                                pawn_attack = rules.pawn_attack(squares, squarex, squarey, Pieces.Pawn, i, j,
-                                                                playerTurn)
-                                if pawn_attack:
-                                    squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
-
-                                # select possible moves
-                                if squares[squarex][squarey].piece.board[i][j]:
-                                    squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, True)
-                                    # Add pieces that are in the way to pieces_block list
-                                    if squares[i][j].piece is not None and not isinstance(squares[squarex][squarey],
-                                                                                          Pieces.Horse) and squares[i][
-                                        j] is not \
-                                            squares[squarex][squarey]:
-                                        pieces_block.append(squares[i][j])
-                            else:
-                                squares[i][j] = Board.Square(i, j, screen, squares[i][j].piece, False)
-
-                    # making sure pieces cannot go over other pieces
-                    blocked_moves = rules.pieces_block(squarex, squarey, pieces_block, playerTurn)
-                    for i in range(len(blocked_moves)):
-                        blocked_x, blocked_y = blocked_moves[i][0], blocked_moves[i][1]
-                        squares[blocked_x][blocked_y] = Board.Square(blocked_x, blocked_y, screen,
-                                                                     squares[blocked_x][blocked_y].piece, False)
+                    squares, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                        squares, movex,
+                        movey, squarex,
+                        squarey,
+                        playerTurn, turner,
+                        pawns_moved,
+                        Castle, selected_string)
                     pieces_block = []
+                    if move_string != "":
+                        print(move_string)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
