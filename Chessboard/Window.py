@@ -4,6 +4,7 @@ import Pieces
 import numpy as np
 import rules
 import pylink
+import os
 
 
 def board(screen, Dummy):
