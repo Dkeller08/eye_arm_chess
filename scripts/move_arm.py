@@ -12,6 +12,7 @@ import geometry_msgs.msg
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
+
 def move():
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node("move_arm", anonymous=True)
@@ -21,19 +22,19 @@ def move():
     move_group = moveit_commander.MoveGroupCommander(group_name)
     rospy.loginfo(move_group.get_current_pose())
     pose_goal = geometry_msgs.msg.Pose()
-    pose_goal.orientation.w = 0.0
-    pose_goal.orientation.x = 1.0
+    pose_goal.orientation.x = 3.0
     pose_goal.orientation.y = 0.0
-    pose_goal.orientation.z = 0.0
-    pose_goal.position.x = 0.1
-    pose_goal.position.y = 0.3
-    pose_goal.position.z = 0.8
+    pose_goal.orientation.z = 3.0
+    pose_goal.position.x = 0.5
+    pose_goal.position.y = 0.0
+    pose_goal.position.z = 0.58
+    pose_list = [0.5,-0.4,0.5,3.0,0.0,3.0]
     rospy.loginfo(pose_goal)
 
-    move_group.set_pose_target(pose_goal)
-    plan = move_group.go(wait=True)
+    move_group.set_pose_target(pose_list)
+    move_group.go(wait=True)
     move_group.stop()
     move_group.clear_pose_targets()
 
-move()
 
+move()
