@@ -20,7 +20,6 @@ def move():
     scene = moveit_commander.PlanningSceneInterface()
     group_name = "panda_arm"
     move_group = moveit_commander.MoveGroupCommander(group_name)
-    rospy.loginfo(move_group.get_current_pose())
     pose_goal = geometry_msgs.msg.Pose()
     pose_goal.orientation.x = 3.0
     pose_goal.orientation.y = 0.0
@@ -28,12 +27,12 @@ def move():
     pose_goal.position.x = 0.5
     pose_goal.position.y = 0.0
     pose_goal.position.z = 0.58
-    pose_list = [0.5,-0.4,0.5,3.0,0.0,3.0]
-    rospy.loginfo(pose_goal)
+    pose_list = [0.5,0.4,0.2,3,0,3]
 
     move_group.set_pose_target(pose_list)
     move_group.go(wait=True)
     move_group.stop()
+    rospy.loginfo(move_group.get_current_pose())
     move_group.clear_pose_targets()
 
 
