@@ -29,7 +29,7 @@ def move():
     pose_goal.position.z = 0.58
     pose_list = [0.5,0.4,0.2,3,0,3]
 
-    move_group.set_pose_target(pose_list)
+    move_group.set_pose_target(pose_goal)
     move_group.go(wait=True)
     move_group.stop()
     rospy.loginfo(move_group.get_current_pose())
