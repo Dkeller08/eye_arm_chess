@@ -13,7 +13,8 @@ from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
 ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
-left_corner = [0.388173755816, 0.268323682215, 0.131660533427]
+left_corner = [0.3, 0.25, 0.15]
+left_upcorner = [0.75,0.25, 0.15]
 
 
 def move(x, y, z):
@@ -46,5 +47,4 @@ display_trajectory_publisher = rospy.Publisher(
 )
 group_name = "panda_arm"
 move_group = moveit_commander.MoveGroupCommander(group_name)
-#move(left_corner[0], left_corner[1], left_corner[2])
-#move(ready_state[0], ready_state[1], ready_state[2])
+

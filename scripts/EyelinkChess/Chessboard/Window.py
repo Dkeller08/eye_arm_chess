@@ -4,6 +4,8 @@ import Pieces
 import numpy as np
 import rules
 import pylink
+import rospy
+from std_msgs.msg import String
 
 
 def board(screen, Dummy):
@@ -191,6 +193,8 @@ def board(screen, Dummy):
     move_y_2 = 0
     move_start = None
     selected_string = ""
+    pub = rospy.Publisher('chatter', String, queue_size=10)
+    rospy.init_node('talker', anonymous=True)
 
     # Game Loop
     running = True
@@ -268,6 +272,7 @@ def board(screen, Dummy):
                     pieces_block = []
                     if move_string != "":
                         print(move_string)
+                        pub.publish(move_string)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
