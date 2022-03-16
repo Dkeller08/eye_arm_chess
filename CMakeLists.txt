@@ -68,7 +68,7 @@ add_service_files(
 
 ## Generate added messages and services with any dependencies listed here
 #generate_messages(
-#   CATKIN_DEPENDS std_msgs
+#  CATKIN_DEPENDS std_msgs
 # )
 
 ################################################
