@@ -16,7 +16,6 @@ ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
 left_corner = [0.3, 0.25, 0.15]
 left_upcorner = [0.75, 0.25, 0.15]
 
-
 def move(x, y, z):
     wpose = move_group.get_current_pose().pose
     waypoints = []
@@ -35,9 +34,11 @@ def move(x, y, z):
     display_trajectory_publisher.publish(display_trajectory)
     move_group.execute(plan, wait=True)
 
+
 def move_readystate():
     # We get the joint values from the group and change some of the values:
-    joint_goal= [-6.571155563683817e-06, -0.7850979563272178, 1.4132255206966704e-05, -2.355953352448032, 5.718449604152909e-05, 1.5709416773256253, 0.7849234744254199]
+    joint_goal = [-6.571155563683817e-06, -0.7850979563272178, 1.4132255206966704e-05, -2.355953352448032,
+                  5.718449604152909e-05, 1.5709416773256253, 0.7849234744254199]
 
     # The go command can be called with joint values, poses, or without any
     # parameters if you have already set the pose or joint target for the group
@@ -46,10 +47,11 @@ def move_readystate():
     # Calling ``stop()`` ensures that there is no residual movement
     move_group.stop()
 
+
 def input_move(chess_move):
     squares = ''.join(char for char in chess_move if char.isdigit())
-    letter_move_1 = left_corner[0]+int(squares[0])*((left_upcorner[0]-left_corner[0])/7)
-    number_move_1 = left_corner[1]-int(squares[1])*((2*left_corner[1])/7)
+    letter_move_1 = left_corner[0] + int(squares[0]) * ((left_upcorner[0] - left_corner[0]) / 7)
+    number_move_1 = left_corner[1] - int(squares[1]) * ((2 * left_corner[1]) / 7)
     letter_move_2 = left_corner[0] + int(squares[2]) * ((left_upcorner[0] - left_corner[0]) / 7)
     number_move_2 = left_corner[1] - int(squares[3]) * ((2 * left_corner[1]) / 7)
     print(letter_move_1, "and number_1 = ", number_move_1, " leeter_2 = ", letter_move_2, "number_2 = ", number_move_2)
@@ -58,6 +60,7 @@ def input_move(chess_move):
     move_readystate()
     move(letter_move_2, number_move_2, left_corner[2])
     move_readystate()
+
 
 moveit_commander.roscpp_initialize(sys.argv)
 rospy.init_node("move_arm", anonymous=True)
@@ -71,4 +74,4 @@ display_trajectory_publisher = rospy.Publisher(
 group_name = "panda_arm"
 move_group = moveit_commander.MoveGroupCommander(group_name)
 move_readystate()
-input_move("0077")
+input_move(sys.argv[1])
