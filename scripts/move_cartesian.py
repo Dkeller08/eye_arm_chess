@@ -16,6 +16,7 @@ ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
 left_corner = [0.3, 0.25, 0.15]
 left_upcorner = [0.75, 0.25, 0.15]
 
+
 def move(x, y, z):
     wpose = move_group.get_current_pose().pose
     waypoints = []
@@ -50,15 +51,15 @@ def move_readystate():
 
 def input_move(chess_move):
     squares = ''.join(char for char in chess_move if char.isdigit())
-    letter_move_1 = left_corner[0] + int(squares[0]) * ((left_upcorner[0] - left_corner[0]) / 7)
-    number_move_1 = left_corner[1] - int(squares[1]) * ((2 * left_corner[1]) / 7)
-    letter_move_2 = left_corner[0] + int(squares[2]) * ((left_upcorner[0] - left_corner[0]) / 7)
-    number_move_2 = left_corner[1] - int(squares[3]) * ((2 * left_corner[1]) / 7)
-    print(letter_move_1, "and number_1 = ", number_move_1, " leeter_2 = ", letter_move_2, "number_2 = ", number_move_2)
+    letter_move_1 = left_corner[1] - int(squares[0]) * ((2 * left_corner[1]) / 7)
+    number_move_1 = left_corner[0] + int(squares[1]) * ((left_upcorner[0] - left_corner[0]) / 7)
+    letter_move_2 = left_corner[1] - int(squares[2]) * ((2 * left_corner[1]) / 7)
+    number_move_2 = left_corner[0] + int(squares[3]) * ((left_upcorner[0] - left_corner[0]) / 7)
+    # print(letter_move_1, "and number_1 = ", number_move_1, " leeter_2 = ", letter_move_2, "number_2 = ", number_move_2)
     move_readystate()
-    move(letter_move_1, number_move_1, left_corner[2])
+    move(number_move_1, letter_move_1, left_corner[2])
     move_readystate()
-    move(letter_move_2, number_move_2, left_corner[2])
+    move(number_move_2, letter_move_2, left_corner[2])
     move_readystate()
 
 

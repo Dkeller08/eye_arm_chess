@@ -5,6 +5,8 @@ import numpy as np
 import rules
 import pylink
 import os
+import subprocess
+import time
 
 
 def board(screen, Dummy):
@@ -242,7 +244,9 @@ def board(screen, Dummy):
                                 Castle, selected_string)
                             pieces_block = []
                             if move_string != "":
-                                os.system("python2.7 ../../move_cartesian.py " + move_string)
+                                #os.system("python2.7 ../../move_cartesian.py " + move_string)
+                                subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
+
 
                     else:
                         move_start = None
@@ -271,7 +275,8 @@ def board(screen, Dummy):
                         Castle, selected_string)
                     pieces_block = []
                     if move_string != "":
-                        os.system("python2.7 ../../move_cartesian.py "+move_string)
+                        #os.system("python2.7 ../../move_cartesian.py " + move_string)
+                        subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
@@ -301,3 +306,4 @@ def board(screen, Dummy):
         if new_sample is not None and old_sample is not None and new_sample.getTime() != old_sample.getTime():
             image_black = pygame.transform.scale(pygame.image.load("../Images/black.png"), (30, 30))
             screen.blit(image_black, ((r_x + l_x) / 2, (l_y + r_y) / 2))
+
