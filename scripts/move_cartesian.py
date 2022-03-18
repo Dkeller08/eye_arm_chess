@@ -13,7 +13,7 @@ from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
 ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
-left_corner = [0.3, 0.25, 0.15]
+left_corner = [0.35, 0.25, 0.15]
 left_upcorner = [0.75, 0.25, 0.15]
 
 
