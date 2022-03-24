@@ -21,6 +21,7 @@ high_state = 0.5
 open_width = 0.09
 closed_width = 0.08
 
+
 def gripper(width):
     client = actionlib.SimpleActionClient('/franka_gripper/grasp', GraspAction)
     client.wait_for_server()
@@ -29,6 +30,7 @@ def gripper(width):
     rospy.loginfo(goal)
     client.send_goal(goal)
     client.wait_for_result(rospy.Duration.from_sec(5.0))
+
 
 def move(x, y, z):
     wpose = move_group.get_current_pose().pose
@@ -88,6 +90,32 @@ def input_move(chess_move):
         gripper(open_width)
         move(number_move_2, letter_move_2, high_state)
         move_readystate()
+    if 'OK' in chess_move:
+        if '7' in squares[2]:
+            rook_move = letter_move_1 - ((2 * left_corner[1]) / 7)
+            king_move = letter_move_1 - 2 * ((2 * left_corner[1]) / 7)
+        else:
+            rook_move = letter_move_1 + ((2 * left_corner[1]) / 7)
+            king_move = letter_move_1 + 2 * ((2 * left_corner[1]) / 7)
+        move(number_move_1, letter_move_1, high_state)
+        move(number_move_1, letter_move_1, left_corner[2])
+        gripper(closed_width)
+        move(number_move_1, letter_move_1, high_state)
+        move(number_move_2, king_move, high_state)
+        move(number_move_2, king_move, left_corner[2])
+        gripper(open_width)
+        move(number_move_2, king_move, high_state)
+        move(number_move_2, letter_move_2, high_state)
+        move(number_move_2, letter_move_2, left_corner[2])
+        gripper(closed_width)
+        move(number_move_2, letter_move_2, high_state)
+        move(number_move_1, rook_move, high_state)
+        move(number_move_1, rook_move, left_corner[2])
+        gripper(open_width)
+        move(number_move_1, rook_move, high_state)
+        move_readystate()
+
+
     else:
         move(number_move_1, letter_move_1, high_state)
         move(number_move_1, letter_move_1, left_corner[2])
@@ -98,7 +126,6 @@ def input_move(chess_move):
         gripper(open_width)
         move(number_move_2, letter_move_2, high_state)
         move_readystate()
-
 
 
 moveit_commander.roscpp_initialize(sys.argv)
@@ -114,3 +141,4 @@ group_name = "panda_arm"
 move_group = moveit_commander.MoveGroupCommander(group_name)
 move_readystate()
 input_move(sys.argv[1])
+print(sys.argv[1])
