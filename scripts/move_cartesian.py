@@ -9,17 +9,16 @@ import rospy
 import moveit_commander
 import moveit_msgs.msg
 import actionlib
-from franka_gripper.msg import GraspGoal, GraspAction, GraspEpsilon
+from franka_gripper.msg import GraspGoal, GraspAction, GraspEpsilon, MoveGoal, MoveAction
 import geometry_msgs.msg
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
 ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
-left_corner = [0.27, 0.25, 0.4]
-left_upcorner = [0.73, 0.25, 0.4]
-high_state = 0.5
-open_width = 0.09
-closed_width = 0.08
+left_corner = [0.32, 0.205, 0.36]
+left_upcorner = [0.72, 0.205, 0.36]
+high_state = 0.45
+closed_width = 0
 
 
 def gripper(width):
@@ -28,6 +27,14 @@ def gripper(width):
     epsilon = GraspEpsilon(0.1, 0.1)
     goal = GraspGoal(width, epsilon, 0.1, 0.08)
     rospy.loginfo(goal)
+    client.send_goal(goal)
+    client.wait_for_result(rospy.Duration.from_sec(5.0))
+
+
+def gripper_move():
+    client = actionlib.SimpleActionClient('/franka_gripper/move', MoveAction)
+    client.wait_for_server()
+    goal = MoveGoal(width=0.05, speed=0.08)
     client.send_goal(goal)
     client.wait_for_result(rospy.Duration.from_sec(5.0))
 
@@ -65,6 +72,7 @@ def move_readystate():
 
 
 def input_move(chess_move):
+    h = left_corner[2]
     squares = ''.join(char for char in chess_move if char.isdigit())
     letter_move_1 = left_corner[1] - int(squares[0]) * ((2 * left_corner[1]) / 7)
     number_move_1 = left_corner[0] + int(squares[1]) * ((left_upcorner[0] - left_corner[0]) / 7)
@@ -72,25 +80,26 @@ def input_move(chess_move):
     number_move_2 = left_corner[0] + int(squares[3]) * ((left_upcorner[0] - left_corner[0]) / 7)
     # print(letter_move_1, "and number_1 = ", number_move_1, " leeter_2 = ", letter_move_2, "number_2 = ", number_move_2)
     move_readystate()
-    gripper(open_width)
+    gripper_move()
+    print(chess_move)
     if 'x' in chess_move:
         # we need to hit a piece
         move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, left_corner[2])
         gripper(closed_width)
         move(number_move_2, letter_move_2, high_state)
-        move_readystate()
-        gripper(open_width)
+        move(0.52, -0.3, high_state)
+        gripper_move()
         move(number_move_1, letter_move_1, high_state)
         move(number_move_1, letter_move_1, left_corner[2])
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, left_corner[2])
-        gripper(open_width)
+        gripper_move()
         move(number_move_2, letter_move_2, high_state)
         move_readystate()
-    if 'OK' in chess_move:
+    elif 'OK' in chess_move:
         if '7' in squares[2]:
             rook_move = letter_move_1 - ((2 * left_corner[1]) / 7)
             king_move = letter_move_1 - 2 * ((2 * left_corner[1]) / 7)
@@ -98,12 +107,12 @@ def input_move(chess_move):
             rook_move = letter_move_1 + ((2 * left_corner[1]) / 7)
             king_move = letter_move_1 + 2 * ((2 * left_corner[1]) / 7)
         move(number_move_1, letter_move_1, high_state)
-        move(number_move_1, letter_move_1, left_corner[2])
+        move(number_move_1, letter_move_1, h)
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, king_move, high_state)
-        move(number_move_2, king_move, left_corner[2])
-        gripper(open_width)
+        move(number_move_2, king_move, h)
+        gripper_move()
         move(number_move_2, king_move, high_state)
         move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, left_corner[2])
@@ -111,19 +120,21 @@ def input_move(chess_move):
         move(number_move_2, letter_move_2, high_state)
         move(number_move_1, rook_move, high_state)
         move(number_move_1, rook_move, left_corner[2])
-        gripper(open_width)
+        gripper_move()
         move(number_move_1, rook_move, high_state)
         move_readystate()
 
 
     else:
+        if "K" in chess_move or "Q" in chess_move:
+            h = h
         move(number_move_1, letter_move_1, high_state)
-        move(number_move_1, letter_move_1, left_corner[2])
+        move(number_move_1, letter_move_1, h)
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, letter_move_2, high_state)
-        move(number_move_2, letter_move_2, left_corner[2])
-        gripper(open_width)
+        move(number_move_2, letter_move_2, h)
+        gripper_move()
         move(number_move_2, letter_move_2, high_state)
         move_readystate()
 
