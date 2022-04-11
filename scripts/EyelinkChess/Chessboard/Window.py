@@ -87,7 +87,7 @@ def board(screen, Dummy):
                 if def_squares[def_squarex][def_squarey].piece is not None and def_squares[def_squarex][
                     def_squarey].piece.player \
                         is def_playerTurn:
-                    def_selected_string = type(def_squares[def_squarex][def_squarey].piece).__name__[0] + str(
+                    def_selected_string = type(def_squares[def_squarex][def_squarey].piece).__name__[0] + playerTurn[0] + str(
                         def_squarex) + str(def_squarey)
                     def_squares[i][j] = Board.Square(i, j, screen, def_squares[i][j].piece, False)
                     # Castleing

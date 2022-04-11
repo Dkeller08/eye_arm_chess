@@ -73,22 +73,24 @@ def move_readystate():
 
 def input_move(chess_move):
     h = left_corner[2]
+    if 'b' in chess_move:
+        bin_x = 0.57
+    elif 'w' in chess_move:
+        bin_x = 0.47
     squares = ''.join(char for char in chess_move if char.isdigit())
     letter_move_1 = left_corner[1] - int(squares[0]) * ((2 * left_corner[1]) / 7)
     number_move_1 = left_corner[0] + int(squares[1]) * ((left_upcorner[0] - left_corner[0]) / 7)
     letter_move_2 = left_corner[1] - int(squares[2]) * ((2 * left_corner[1]) / 7)
     number_move_2 = left_corner[0] + int(squares[3]) * ((left_upcorner[0] - left_corner[0]) / 7)
-    # print(letter_move_1, "and number_1 = ", number_move_1, " leeter_2 = ", letter_move_2, "number_2 = ", number_move_2)
     move_readystate()
     gripper_move()
-    print(chess_move)
     if 'x' in chess_move:
         # we need to hit a piece
         move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, left_corner[2])
         gripper(closed_width)
         move(number_move_2, letter_move_2, high_state)
-        move(0.52, -0.3, high_state)
+        move(bin_x, -0.3, high_state)
         gripper_move()
         move(number_move_1, letter_move_1, high_state)
         move(number_move_1, letter_move_1, left_corner[2])
