@@ -15,9 +15,10 @@ from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
 ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
-left_corner = [0.32, 0.205, 0.36]
-left_upcorner = [0.72, 0.205, 0.36]
-high_state = 0.45
+left_corner = [0.32, 0.205, 0.39]
+left_upcorner = [0.72, 0.205, 0.39]
+high_state = 0.49
+horse_hight = 0.405
 closed_width = 0
 
 
@@ -34,7 +35,7 @@ def gripper(width):
 def gripper_move():
     client = actionlib.SimpleActionClient('/franka_gripper/move', MoveAction)
     client.wait_for_server()
-    goal = MoveGoal(width=0.05, speed=0.08)
+    goal = MoveGoal(width=0.04, speed=0.08)
     client.send_goal(goal)
     client.wait_for_result(rospy.Duration.from_sec(5.0))
 
@@ -85,19 +86,25 @@ def input_move(chess_move):
     move_readystate()
     gripper_move()
     if 'x' in chess_move:
+        h_1 =h
+        h_2 = h
+        if 'H' is chess_move[0]:
+            h_1 = horse_hight
+        elif 'H' in chess_move:
+            h_2 = horse_hight
         # we need to hit a piece
         move(number_move_2, letter_move_2, high_state)
-        move(number_move_2, letter_move_2, left_corner[2])
+        move(number_move_2, letter_move_2, h_2)
         gripper(closed_width)
         move(number_move_2, letter_move_2, high_state)
         move(bin_x, -0.3, high_state)
         gripper_move()
         move(number_move_1, letter_move_1, high_state)
-        move(number_move_1, letter_move_1, left_corner[2])
+        move(number_move_1, letter_move_1, h_1)
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, letter_move_2, high_state)
-        move(number_move_2, letter_move_2, left_corner[2])
+        move(number_move_2, letter_move_2, h_1+0.003)
         gripper_move()
         move(number_move_2, letter_move_2, high_state)
         move_readystate()
@@ -113,7 +120,7 @@ def input_move(chess_move):
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, king_move, high_state)
-        move(number_move_2, king_move, h)
+        move(number_move_2, king_move, h+0.003)
         gripper_move()
         move(number_move_2, king_move, high_state)
         move(number_move_2, letter_move_2, high_state)
@@ -121,24 +128,25 @@ def input_move(chess_move):
         gripper(closed_width)
         move(number_move_2, letter_move_2, high_state)
         move(number_move_1, rook_move, high_state)
-        move(number_move_1, rook_move, left_corner[2])
+        move(number_move_1, rook_move, left_corner[2]+0.003)
         gripper_move()
         move(number_move_1, rook_move, high_state)
         move_readystate()
 
 
     else:
-        if "K" in chess_move or "Q" in chess_move:
-            h = h
+        if "H" in chess_move:
+            h = horse_hight
         move(number_move_1, letter_move_1, high_state)
         move(number_move_1, letter_move_1, h)
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, letter_move_2, high_state)
-        move(number_move_2, letter_move_2, h)
+        move(number_move_2, letter_move_2, h+0.003)
         gripper_move()
         move(number_move_2, letter_move_2, high_state)
         move_readystate()
+        h = left_corner[2]
 
 
 moveit_commander.roscpp_initialize(sys.argv)
