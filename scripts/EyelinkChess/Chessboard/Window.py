@@ -7,6 +7,7 @@ import pylink
 import os
 import subprocess
 import time
+from eye_arm_chess.scripts import move_cartesian
 
 
 def board(screen, Dummy):
@@ -87,7 +88,8 @@ def board(screen, Dummy):
                 if def_squares[def_squarex][def_squarey].piece is not None and def_squares[def_squarex][
                     def_squarey].piece.player \
                         is def_playerTurn:
-                    def_selected_string = type(def_squares[def_squarex][def_squarey].piece).__name__[0] + playerTurn[0] + str(
+                    def_selected_string = type(def_squares[def_squarex][def_squarey].piece).__name__[0] + playerTurn[
+                        0] + str(
                         def_squarex) + str(def_squarey)
                     def_squares[i][j] = Board.Square(i, j, screen, def_squares[i][j].piece, False)
                     # Castleing
@@ -244,8 +246,9 @@ def board(screen, Dummy):
                                 Castle, selected_string)
                             pieces_block = []
                             if move_string != "":
-                                #os.system("python2.7 ../../move_cartesian.py " + move_string)
-                                subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
+                                # os.system("python2.7 ../../move_cartesian.py " + move_string)
+                                # subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
+                                move_cartesian.input_move(move_string)
 
 
                     else:
@@ -275,8 +278,9 @@ def board(screen, Dummy):
                         Castle, selected_string)
                     pieces_block = []
                     if move_string != "":
-                        #os.system("python2.7 ../../move_cartesian.py " + move_string)
-                        subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
+                        # os.system("python2.7 ../../move_cartesian.py " + move_string)
+                        # subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
+                        move_cartesian.input_move(move_string)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
@@ -306,4 +310,3 @@ def board(screen, Dummy):
         if new_sample is not None and old_sample is not None and new_sample.getTime() != old_sample.getTime():
             image_black = pygame.transform.scale(pygame.image.load("../Images/black.png"), (30, 30))
             screen.blit(image_black, ((r_x + l_x) / 2, (l_y + r_y) / 2))
-

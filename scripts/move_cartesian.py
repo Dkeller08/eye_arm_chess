@@ -160,6 +160,4 @@ display_trajectory_publisher = rospy.Publisher(
 )
 group_name = "panda_arm"
 move_group = moveit_commander.MoveGroupCommander(group_name)
-move_readystate()
-input_move(sys.argv[1])
-print(sys.argv[1])
+
