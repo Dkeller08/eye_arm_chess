@@ -4,10 +4,7 @@ import Pieces
 import numpy as np
 import rules
 import pylink
-import os
-import subprocess
-import time
-from eye_arm_chess.scripts import move_cartesian
+import move_cartesian
 
 
 def board(screen, Dummy):

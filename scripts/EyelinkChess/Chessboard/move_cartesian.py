@@ -1,8 +1,4 @@
-#!/usr/bin/env python2.7
-
 from __future__ import print_function
-from six.moves import input
-
 import sys
 import copy
 import rospy
@@ -10,9 +6,6 @@ import moveit_commander
 import moveit_msgs.msg
 import actionlib
 from franka_gripper.msg import GraspGoal, GraspAction, GraspEpsilon, MoveGoal, MoveAction
-import geometry_msgs.msg
-from std_msgs.msg import String
-from moveit_commander.conversions import pose_to_list
 
 ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
 left_corner = [0.32, 0.205, 0.39]
@@ -60,16 +53,17 @@ def move(x, y, z):
 
 
 def move_readystate():
-    # We get the joint values from the group and change some of the values:
-    joint_goal = [-6.571155563683817e-06, -0.7850979563272178, 1.4132255206966704e-05, -2.355953352448032,
-                  5.718449604152909e-05, 1.5709416773256253, 0.7849234744254199]
-
-    # The go command can be called with joint values, poses, or without any
-    # parameters if you have already set the pose or joint target for the group
-    move_group.go(joint_goal, wait=True)
-
-    # Calling ``stop()`` ensures that there is no residual movement
-    move_group.stop()
+    move(0.3, 0, 0.7)
+    # # We get the joint values from the group and change some of the values:
+    # joint_goal = [-6.571155563683817e-06, -0.7850979563272178, 1.4132255206966704e-05, -2.355953352448032,
+    #               5.718449604152909e-05, 1.5709416773256253, 0.7849234744254199]
+    #
+    # # The go command can be called with joint values, poses, or without any
+    # # parameters if you have already set the pose or joint target for the group
+    # move_group.go(joint_goal, wait=True)
+    #
+    # # Calling ``stop()`` ensures that there is no residual movement
+    # move_group.stop()
 
 
 def input_move(chess_move):
@@ -93,7 +87,7 @@ def input_move(chess_move):
         elif 'H' in chess_move:
             h_2 = horse_hight
         # we need to hit a piece
-        move(number_move_2, letter_move_2, high_state)
+        #move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, h_2)
         gripper(closed_width)
         move(number_move_2, letter_move_2, high_state)
@@ -106,7 +100,7 @@ def input_move(chess_move):
         move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, h_1+0.003)
         gripper_move()
-        move(number_move_2, letter_move_2, high_state)
+        #move(number_move_2, letter_move_2, high_state)
         move_readystate()
     elif 'OK' in chess_move:
         if '7' in squares[2]:
@@ -115,7 +109,7 @@ def input_move(chess_move):
         else:
             rook_move = letter_move_1 + ((2 * left_corner[1]) / 7)
             king_move = letter_move_1 + 2 * ((2 * left_corner[1]) / 7)
-        move(number_move_1, letter_move_1, high_state)
+        #move(number_move_1, letter_move_1, high_state)
         move(number_move_1, letter_move_1, h)
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
@@ -130,21 +124,21 @@ def input_move(chess_move):
         move(number_move_1, rook_move, high_state)
         move(number_move_1, rook_move, left_corner[2]+0.003)
         gripper_move()
-        move(number_move_1, rook_move, high_state)
+        #move(number_move_1, rook_move, high_state)
         move_readystate()
 
 
     else:
         if "H" in chess_move:
             h = horse_hight
-        move(number_move_1, letter_move_1, high_state)
+        #move(number_move_1, letter_move_1, high_state)
         move(number_move_1, letter_move_1, h)
         gripper(closed_width)
         move(number_move_1, letter_move_1, high_state)
         move(number_move_2, letter_move_2, high_state)
         move(number_move_2, letter_move_2, h+0.003)
         gripper_move()
-        move(number_move_2, letter_move_2, high_state)
+        #move(number_move_2, letter_move_2, high_state)
         move_readystate()
         h = left_corner[2]
 
