@@ -4,7 +4,14 @@ import Pieces
 import numpy as np
 import rules
 import pylink
-import move_cartesian
+import cv2
+import board_recognition
+try:
+    import move_cartesian
+    robot_connected=True
+except:
+    robot_connected = False
+
 
 
 def board(screen, Dummy):
@@ -193,6 +200,12 @@ def board(screen, Dummy):
     move_y_2 = 0
     move_start = None
     selected_string = ""
+    try:
+        cap = cv2.VideoCapture(4)
+        camera_used = True
+    except:
+        print("Camera cannot be accesed")
+        camera_used = False
 
     # Game Loop
     running = True
@@ -274,12 +287,23 @@ def board(screen, Dummy):
                         pawns_moved,
                         Castle, selected_string)
                     pieces_block = []
-                    if move_string != "":
+                    if move_string != "" and robot_connected:
                         # os.system("python2.7 ../../move_cartesian.py " + move_string)
                         # subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
                         move_cartesian.input_move(move_string)
 
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    ret, frame = cap.read()
+                    cv2.imshow('frame', frame)
+                    cv2.waitKey(0)
+                    square = board_recognition.board_recognition(frame)
+                    for i in square:
+                        print(square.has_piece)
+                    print(squares)
+
+
+                    print("s")
                 if event.key == pygame.K_q:
                     running = False
                     if not Dummy:
