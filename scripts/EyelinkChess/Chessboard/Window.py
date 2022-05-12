@@ -6,6 +6,7 @@ import rules
 import pylink
 import cv2
 import board_recognition
+import time
 try:
     import move_cartesian
     robot_connected=True
@@ -200,12 +201,7 @@ def board(screen, Dummy):
     move_y_2 = 0
     move_start = None
     selected_string = ""
-    try:
-        cap = cv2.VideoCapture(4)
-        camera_used = True
-    except:
-        print("Camera cannot be accesed")
-        camera_used = False
+
 
     # Game Loop
     running = True
@@ -294,16 +290,26 @@ def board(screen, Dummy):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
+                    try:
+                        cap = cv2.VideoCapture(0)
+                        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3) # auto mode
+                        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1) # manual mode
+                        cap.set(cv2.CAP_PROP_EXPOSURE, 15)
+
+                        camera_used = True
+                    except:
+                        print("Camera cannot be accesed")
+                        camera_used = False
                     ret, frame = cap.read()
                     cv2.imshow('frame', frame)
                     cv2.waitKey(0)
+                    cv2.destroyAllWindows()
+                    cap.release()
+
                     square = board_recognition.board_recognition(frame)
                     for i in square:
-                        print(square.has_piece)
+                        print(i.has_piece)
                     print(squares)
-
-
-                    print("s")
                 if event.key == pygame.K_q:
                     running = False
                     if not Dummy:

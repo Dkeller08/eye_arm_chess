@@ -316,17 +316,49 @@ def detect_objects(squares, mask):
     cv2.imwrite("board_check.jpg", mask)
     for i in squares:
         img = mask[i.c1[1]:i.c4[1], i.c1[0]:i.c4[0]]
-        edges = cv2.Canny(image=img, threshold1=100, threshold2=200)
-        circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, 1, 20,
-                                   param1=50, param2=10, minRadius=0, maxRadius=0)
+        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        blur = cv2.GaussianBlur(gray,(7,7),0)
+        edges = cv2.Canny(image=img, threshold1=80, threshold2=200)
+        circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, 1, 45,
+                                   param1=50, param2=10, minRadius=0, maxRadius=50)
         if circles is not None:
             i.has_piece = True
-            print("Piece!")
-        cv2.imshow("Squares", edges)
+            print("piece!")
+            circles = np.uint16(np.around(circles))
+            for j in circles[0, :]:
+                center = (j[0], j[1])
+                # circle center
+                cv2.circle(img, center, 1, (0, 100, 100), 3)
+                # circle outline
+                radius = j[2]
+                cv2.circle(img, center, radius, (255, 0, 255), 3)
+        cv2.imshow("Squares", img)
         print(i.position)
 
         cv2.waitKey(0)
     return squares
+
+def alter_detect_objects(img_raw):
+    bilateral_filtered_image = cv2.bilateralFilter(img_raw, 5, 175, 175)
+    cv2.imshow('Bilateral', bilateral_filtered_image)
+    cv2.waitKey(0)
+
+    edge_detected_image = cv2.Canny(bilateral_filtered_image, 20, 200)
+    cv2.imshow('Edge', edge_detected_image)
+    cv2.waitKey(0)
+
+    contours, hierarchy = cv2.findContours(edge_detected_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    contour_list = []
+    for contour in contours:
+        approx = cv2.approxPolyDP(contour, 0.01 * cv2.arcLength(contour, True), True)
+        area = cv2.contourArea(contour)
+        if ((len(approx) > 8) & (len(approx) < 23) & (area > 30)):
+            contour_list.append(contour)
+
+    cv2.drawContours(img_raw, contour_list, -1, (255, 0, 0), 2)
+    cv2.imshow('Objects Detected', img_raw)
+    cv2.waitKey(0)
 
 
 def board_recognition(image):
@@ -343,3 +375,5 @@ def board_recognition(image):
     squares = findSquares(corners, img)
     # detect objects
     squares = detect_objects(squares, mask)
+    cv2.destroyAllWindows()
+    return squares
