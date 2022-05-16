@@ -7,15 +7,69 @@ import pylink
 import cv2
 import board_recognition
 import time
+
 try:
     import move_cartesian
-    robot_connected=True
+
+    robot_connected = True
 except:
     robot_connected = False
 
 
-
 def board(screen, Dummy):
+    def check_board():
+        try:
+            cap = cv2.VideoCapture(0)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)  # auto mode
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # manual mode
+            cap.set(cv2.CAP_PROP_EXPOSURE, 15)
+
+            camera_used = True
+        except:
+            print("Camera cannot be accesed")
+            camera_used = False
+        ret, frame = cap.read()
+        cv2.imshow('frame', frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        cap.release()
+
+        square = board_recognition.board_recognition(frame)
+        return square
+
+    def check_initial_position(board):
+        correct_squares = 0
+        false_squares = 0
+        not_recognized = 0
+        falsely_recognized = 0
+        square = check_board()
+        for i in range(8):
+            for j in range(8):
+                if board[i][j].has_piece == square[i][j]:
+                    correct_squares += 1
+                else:
+                    false_squares += 1
+                    if board[i][j].has_piece:
+                        not_recognized +=1
+                    else:
+                        falsely_recognized+=1
+
+        return correct_squares, false_squares, not_recognized, falsely_recognized
+
+    def compare_boards(board):
+        square = check_board()
+        for i in range(8):
+            for j in range(8):
+                now_empty = []
+                now_full = []
+                if board[i][j].has_piece != square[i][j]:
+                    if board[i][j].has_piece:
+                        now_empty.append(square[i][j])
+                    else:
+                        now_full.append(square[i][j])
+
+
+
     def endTurn(def_turner, def_pawns_moved):
         def_turner = def_turner ^ 1
         def_playerTurn = players[def_turner]
@@ -178,6 +232,10 @@ def board(screen, Dummy):
             piece = Pieces.starting_position(i, j)
             squares[i][j] = Board.Square(i, j, screen, piece, False)
     # Set some constants
+    correct, faulty, not_recog, false_recog = check_initial_position(squares)
+    if faulty != 0:
+        raise Exception(f'Board not found correctly! Correctsquares: {correct}, faulty squares: {faulty}. Not '
+                        f'recognized: {not_recog}, falsely recognized: {false_recog}')
     squarex, squarey = 0, 0
     h, w = screen.get_height(), screen.get_width()
     Castle = False
@@ -201,7 +259,6 @@ def board(screen, Dummy):
     move_y_2 = 0
     move_start = None
     selected_string = ""
-
 
     # Game Loop
     running = True
@@ -290,23 +347,7 @@ def board(screen, Dummy):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
-                    try:
-                        cap = cv2.VideoCapture(0)
-                        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3) # auto mode
-                        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1) # manual mode
-                        cap.set(cv2.CAP_PROP_EXPOSURE, 15)
-
-                        camera_used = True
-                    except:
-                        print("Camera cannot be accesed")
-                        camera_used = False
-                    ret, frame = cap.read()
-                    cv2.imshow('frame', frame)
-                    cv2.waitKey(0)
-                    cv2.destroyAllWindows()
-                    cap.release()
-
-                    square = board_recognition.board_recognition(frame)
+                    square = check_board()
                     for i in square:
                         print(i.has_piece)
                     print(squares)

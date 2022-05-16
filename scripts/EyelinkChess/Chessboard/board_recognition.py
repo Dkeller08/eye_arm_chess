@@ -277,7 +277,7 @@ def findSquares(corners, colorEdges):
 
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     numbers = ['1', '2', '3', '4', '5', '6', '7', '8']
-    Squares = []
+    Squares = np.full((8, 8), Square)
 
     # sort corners by column
     for r in rows:
@@ -297,7 +297,7 @@ def findSquares(corners, colorEdges):
             newSquare.draw(colorEdges, (0, 0, 255), 2)
             newSquare.drawROI(colorEdges, (255, 0, 0), 2)
             newSquare.classify(colorEdges)
-            Squares.append(newSquare)
+            Squares[r][7-c] = newSquare
 
     if debug:
         # Show image with squares and ROI drawn and position labelled
