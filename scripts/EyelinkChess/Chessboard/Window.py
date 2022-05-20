@@ -56,20 +56,6 @@ def board(screen, Dummy):
 
         return correct_squares, false_squares, not_recognized, falsely_recognized
 
-    def compare_boards(board):
-        square = check_board()
-        for i in range(8):
-            for j in range(8):
-                now_empty = []
-                now_full = []
-                if board[i][j].has_piece != square[i][j]:
-                    if board[i][j].has_piece:
-                        now_empty.append(square[i][j])
-                    else:
-                        now_full.append(square[i][j])
-
-
-
     def endTurn(def_turner, def_pawns_moved):
         def_turner = def_turner ^ 1
         def_playerTurn = players[def_turner]
@@ -188,6 +174,33 @@ def board(screen, Dummy):
                                                              def_squares[blocked_x][blocked_y].piece,
                                                              False)
         return def_squares, def_squarex, def_squarey, def_playerTurn, def_turner, def_pawns_moved, def_Castle, def_selected_string, def_move_string
+
+    def compare_boards(board, playerTurn, turner, pawns_moved, Castle, selected_string):
+        square = check_board()
+        for i in range(8):
+            for j in range(8):
+                now_empty = []
+                now_full = []
+                if board[i][j].has_piece != square[i][j]:
+                    if board[i][j].has_piece:
+                        now_empty.append([i,j])
+                    else:
+                        now_full.append([i,j])
+
+        if len(now_empty) == 1 and len(now_full) == 1:
+            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                board,
+                now_empty[0][0],
+                now_empty[0][1],
+                now_full[0][0],
+                now_full[0][1],
+                playerTurn,
+                turner,
+                pawns_moved,
+                Castle, selected_string)
+        return board, playerTurn, turner, pawns_moved, Castle, selected_string, move_string
+
+
 
     def abort_trial():
         """Ends recording
@@ -347,10 +360,12 @@ def board(screen, Dummy):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
-                    square = check_board()
-                    for i in square:
-                        print(i.has_piece)
-                    print(squares)
+                    squares, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = compare_boards(squares,playerTurn,turner, pawns_moved,Castle, selected_string)
+                    pieces_block = []
+                    if move_string != "" and robot_connected:
+                        # os.system("python2.7 ../../move_cartesian.py " + move_string)
+                        # subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
+                        move_cartesian.input_move(move_string)
                 if event.key == pygame.K_q:
                     running = False
                     if not Dummy:
