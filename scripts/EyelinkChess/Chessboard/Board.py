@@ -5,6 +5,7 @@ pygame.init()
 
 class Square:
     def __init__(self, letter, number, screen, piece, possibleMove):
+        self.piece_bool = False
         self.letter = letter
         self.number = number
         self.screen = screen
@@ -25,6 +26,6 @@ class Square:
 
     def has_piece(self):
         if self.piece is None:
-            return False
+            self.piece_bool = False
         else:
-            return True
+            self.piece_bool = True

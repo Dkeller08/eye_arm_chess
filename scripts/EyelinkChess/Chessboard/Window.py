@@ -17,24 +17,63 @@ except:
 
 
 def board(screen, Dummy):
+    def undistort(img):
+        cv2.imshow("undistorted",img)
+        cv2.waitKey(0)
+        DIM=(1920, 1440)
+        K = np.array([[1141.0682579839233, 0.0, 986.5923008101605], [0.0, 1141.588261433595, 747.2232727434749],
+                      [0.0, 0.0, 1.0]])
+        D = np.array([[-0.07684126395433953], [0.22851365143861682], [-0.4987877748120961], [0.3869384335287188]])
+        h, w = img.shape[:2]
+        map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), K, DIM, cv2.CV_16SC2)
+        undistorted_img = cv2.remap(img, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+        cv2.imshow("undistorted", undistorted_img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        return undistorted_img
     def check_board():
         try:
-            cap = cv2.VideoCapture(0)
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)  # auto mode
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # manual mode
-            cap.set(cv2.CAP_PROP_EXPOSURE, 15)
+            cap = cv2.VideoCapture(1,apiPreference=cv2.CAP_ANY, params=[
+    cv2.CAP_PROP_FRAME_WIDTH, 1920,
+    cv2.CAP_PROP_FRAME_HEIGHT, 1440])
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)  # auto mode
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # manual mode
+            cap.set(cv2.CAP_PROP_EXPOSURE, 40)
 
             camera_used = True
         except:
             print("Camera cannot be accesed")
             camera_used = False
-        ret, frame = cap.read()
-        cv2.imshow('frame', frame)
+        ret, frame_dim = cap.read()
+        #frame_dim = cv2.imread('dim.jpg')
+        frame_dim = undistort(frame_dim)
+        cv2.imshow('frame', frame_dim)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         cap.release()
 
-        square = board_recognition.board_recognition(frame)
+        try:
+            cap = cv2.VideoCapture(1,apiPreference=cv2.CAP_ANY, params=[
+    cv2.CAP_PROP_FRAME_WIDTH, 1920,
+    cv2.CAP_PROP_FRAME_HEIGHT, 1440])
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)  # auto mode
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # manual mode
+            cap.set(cv2.CAP_PROP_EXPOSURE, 80)
+
+            camera_used = True
+        except:
+            print("Camera cannot be accesed")
+            camera_used = False
+        ret, frame_bright = cap.read()
+        #frame_bright = cv2.imread('bright.jpg')
+        frame_bright = undistort(frame_bright)
+        cv2.imshow('frame', frame_bright)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        cap.release()
+
+
+        square = board_recognition.board_recognition(frame_dim, frame_bright)
         return square
 
     def check_initial_position(board):
@@ -45,13 +84,16 @@ def board(screen, Dummy):
         square = check_board()
         for i in range(8):
             for j in range(8):
-                if board[i][j].has_piece == square[i][j]:
+                board[i][j].has_piece()
+
+                if board[i][j].piece_bool == square[i][j].has_piece:
                     correct_squares += 1
                 else:
                     false_squares += 1
-                    if board[i][j].has_piece:
+                    if board[i][j].piece_bool:
                         not_recognized +=1
                     else:
+                        print(square[i][j].position)
                         falsely_recognized+=1
 
         return correct_squares, false_squares, not_recognized, falsely_recognized
@@ -181,7 +223,7 @@ def board(screen, Dummy):
             for j in range(8):
                 now_empty = []
                 now_full = []
-                if board[i][j].has_piece != square[i][j]:
+                if board[i][j].has_piece != square[i][j].has_piece:
                     if board[i][j].has_piece:
                         now_empty.append([i,j])
                     else:

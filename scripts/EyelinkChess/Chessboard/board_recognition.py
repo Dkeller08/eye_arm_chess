@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import imutils
 import math
+import argparse
 
 debug = True
 
@@ -311,31 +312,35 @@ def findSquares(corners, colorEdges):
     return Squares
 
 
-def detect_objects(squares, mask):
-    board = 0
-    cv2.imwrite("board_check.jpg", mask)
-    for i in squares:
-        img = mask[i.c1[1]:i.c4[1], i.c1[0]:i.c4[0]]
-        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        blur = cv2.GaussianBlur(gray,(7,7),0)
-        edges = cv2.Canny(image=img, threshold1=80, threshold2=200)
-        circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, 1, 45,
-                                   param1=50, param2=10, minRadius=0, maxRadius=50)
-        if circles is not None:
-            i.has_piece = True
-            print("piece!")
-            circles = np.uint16(np.around(circles))
-            for j in circles[0, :]:
-                center = (j[0], j[1])
-                # circle center
-                cv2.circle(img, center, 1, (0, 100, 100), 3)
-                # circle outline
-                radius = j[2]
-                cv2.circle(img, center, radius, (255, 0, 255), 3)
-        cv2.imshow("Squares", img)
-        print(i.position)
+def detect_objects(squares, image_dim, image_bright):
 
-        cv2.waitKey(0)
+    for j in squares:
+        for i in j:
+            num = int(i.position[0]) + int(i.position[-1])
+            if (num % 2) == 0:
+                img = image_bright[i.c1[1]:i.c4[1], i.c1[0]:i.c4[0]]
+            else:
+                img = image_dim[i.c1[1]:i.c4[1], i.c1[0]:i.c4[0]]
+
+            gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            blur = cv2.GaussianBlur(gray, (7, 7), 0)
+            edges = cv2.Canny(image=img, threshold1=40, threshold2=200)
+            circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, 1, 40,
+                                       param1=50, param2=10, minRadius=0, maxRadius=150)
+            if circles is not None:
+                i.has_piece = True
+                print("piece!")
+                circles = np.uint16(np.around(circles))
+                for j in circles[0, :]:
+                    center = (j[0], j[1])
+                    # circle center
+                    cv2.circle(img, center, 1, (0, 100, 100), 3)
+                    # circle outline
+                    radius = j[2]
+                    cv2.circle(img, center, radius, (255, 0, 255), 3)
+            cv2.imshow("Squares", img)
+            cv2.imshow("edge", edges)
+            cv2.waitKey(0)
     return squares
 
 def alter_detect_objects(img_raw):
@@ -361,12 +366,15 @@ def alter_detect_objects(img_raw):
     cv2.waitKey(0)
 
 
-def board_recognition(image):
-    adaptiveThresh, img = clean_Image(image)
+def board_recognition(image_dim, image_bright):
+    adaptiveThresh, img = clean_Image(image_dim)
     # Black out all pixels outside the border of the chessboard
-    mask = initialize_mask(adaptiveThresh, img)
+    mask_dim = initialize_mask(adaptiveThresh, img)
+    adaptiveThresh, img = clean_Image(image_bright)
+    # Black out all pixels outside the border of the chessboard
+    mask_bright = initialize_mask(adaptiveThresh, img)
     # Find edges
-    edges, colorEdges = findEdges(mask)
+    edges, colorEdges = findEdges(mask_bright)
     # Find lines
     horizontal, vertical = findLines(edges, colorEdges)
     # Find corners
@@ -374,6 +382,6 @@ def board_recognition(image):
     # Find squares
     squares = findSquares(corners, img)
     # detect objects
-    squares = detect_objects(squares, mask)
+    squares = detect_objects(squares, mask_dim, mask_bright)
     cv2.destroyAllWindows()
     return squares
