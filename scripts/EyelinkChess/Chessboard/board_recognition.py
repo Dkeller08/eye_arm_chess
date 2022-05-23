@@ -4,7 +4,7 @@ import imutils
 import math
 import argparse
 
-debug = True
+debug = False
 
 
 class Line:
@@ -323,10 +323,10 @@ def detect_objects(squares, image_dim, image_bright):
                 img = image_dim[i.c1[1]:i.c4[1], i.c1[0]:i.c4[0]]
 
             gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            blur = cv2.GaussianBlur(gray, (7, 7), 0)
-            edges = cv2.Canny(image=img, threshold1=40, threshold2=200)
-            circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, 1, 40,
-                                       param1=50, param2=10, minRadius=0, maxRadius=150)
+            edges = cv2.Canny(image=gray, threshold1=60, threshold2=120)
+            circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 50,param1=120, param2=10, minRadius=7, maxRadius=13)
+            # param1 = canny highest value, lowest is half. param2 = accumulator threshold for the circle centers
+
             if circles is not None:
                 i.has_piece = True
                 print("piece!")
@@ -338,9 +338,11 @@ def detect_objects(squares, image_dim, image_bright):
                     # circle outline
                     radius = j[2]
                     cv2.circle(img, center, radius, (255, 0, 255), 3)
-            cv2.imshow("Squares", img)
-            cv2.imshow("edge", edges)
-            cv2.waitKey(0)
+            if debug is True:
+                cv2.imshow("Squares", img)
+                cv2.imshow("gray",gray)
+                cv2.imshow("edge", edges)
+                cv2.waitKey(0)
     return squares
 
 def alter_detect_objects(img_raw):
@@ -367,12 +369,12 @@ def alter_detect_objects(img_raw):
 
 
 def board_recognition(image_dim, image_bright):
-    adaptiveThresh, img = clean_Image(image_dim)
+    adaptiveThresh, img_dim = clean_Image(image_dim)
     # Black out all pixels outside the border of the chessboard
-    mask_dim = initialize_mask(adaptiveThresh, img)
-    adaptiveThresh, img = clean_Image(image_bright)
+    mask_dim = initialize_mask(adaptiveThresh, img_dim)
+    adaptiveThresh, img_bright = clean_Image(image_bright)
     # Black out all pixels outside the border of the chessboard
-    mask_bright = initialize_mask(adaptiveThresh, img)
+    mask_bright = initialize_mask(adaptiveThresh, img_bright)
     # Find edges
     edges, colorEdges = findEdges(mask_bright)
     # Find lines
@@ -380,7 +382,7 @@ def board_recognition(image_dim, image_bright):
     # Find corners
     corners = findCorners(horizontal, vertical, colorEdges)
     # Find squares
-    squares = findSquares(corners, img)
+    squares = findSquares(corners, img_bright)
     # detect objects
     squares = detect_objects(squares, mask_dim, mask_bright)
     cv2.destroyAllWindows()

@@ -6,7 +6,8 @@ import rules
 import pylink
 import cv2
 import board_recognition
-import time
+
+debug = False
 
 try:
     import move_cartesian
@@ -31,14 +32,15 @@ def board(screen, Dummy):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         return undistorted_img
+
     def check_board():
         try:
-            cap = cv2.VideoCapture(1,apiPreference=cv2.CAP_ANY, params=[
-    cv2.CAP_PROP_FRAME_WIDTH, 1920,
-    cv2.CAP_PROP_FRAME_HEIGHT, 1440])
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)  # auto mode
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # manual mode
-            cap.set(cv2.CAP_PROP_EXPOSURE, 40)
+            cap = cv2.VideoCapture(0)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)  # auto mode
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # manual mode
+            cap.set(cv2.CAP_PROP_EXPOSURE, 15) #0-5000
+            cap.set(cv2.CAP_PROP_CONTRAST, 13) # 0-30
+            cap.set(cv2.CAP_PROP_BRIGHTNESS, 20) #-64-64
 
             camera_used = True
         except:
@@ -46,32 +48,32 @@ def board(screen, Dummy):
             camera_used = False
         ret, frame_dim = cap.read()
         #frame_dim = cv2.imread('dim.jpg')
-        frame_dim = undistort(frame_dim)
-        cv2.imshow('frame', frame_dim)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        #frame_dim = undistort(frame_dim)
+        if debug is True:
+            cv2.imshow('frame', frame_dim)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
         cap.release()
 
         try:
-            cap = cv2.VideoCapture(1,apiPreference=cv2.CAP_ANY, params=[
-    cv2.CAP_PROP_FRAME_WIDTH, 1920,
-    cv2.CAP_PROP_FRAME_HEIGHT, 1440])
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)  # auto mode
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # manual mode
-            cap.set(cv2.CAP_PROP_EXPOSURE, 80)
-
+            cap = cv2.VideoCapture(0)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)  # auto mode
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # manual mode
+            cap.set(cv2.CAP_PROP_EXPOSURE, 20) #0-5000
+            cap.set(cv2.CAP_PROP_CONTRAST, 13) #0-30
+            cap.set(cv2.CAP_PROP_BRIGHTNESS, 20)  # -64-64
             camera_used = True
         except:
             print("Camera cannot be accesed")
             camera_used = False
         ret, frame_bright = cap.read()
         #frame_bright = cv2.imread('bright.jpg')
-        frame_bright = undistort(frame_bright)
-        cv2.imshow('frame', frame_bright)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        #frame_bright = undistort(frame_bright)
+        if debug is True:
+            cv2.imshow('frame', frame_bright)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
         cap.release()
-
 
         square = board_recognition.board_recognition(frame_dim, frame_bright)
         return square
@@ -219,6 +221,7 @@ def board(screen, Dummy):
 
     def compare_boards(board, playerTurn, turner, pawns_moved, Castle, selected_string):
         square = check_board()
+        move_string = []
         for i in range(8):
             for j in range(8):
                 now_empty = []
@@ -229,7 +232,9 @@ def board(screen, Dummy):
                     else:
                         now_full.append([i,j])
 
+
         if len(now_empty) == 1 and len(now_full) == 1:
+            print("move detected")
             board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
                 board,
                 now_empty[0][0],
@@ -239,7 +244,8 @@ def board(screen, Dummy):
                 playerTurn,
                 turner,
                 pawns_moved,
-                Castle, selected_string)
+                Castle,
+                selected_string)
         return board, playerTurn, turner, pawns_moved, Castle, selected_string, move_string
 
 
@@ -289,7 +295,7 @@ def board(screen, Dummy):
     # Set some constants
     correct, faulty, not_recog, false_recog = check_initial_position(squares)
     if faulty != 0:
-        raise Exception(f'Board not found correctly! Correctsquares: {correct}, faulty squares: {faulty}. Not '
+        raise Exception(f'Board not found correctly! Number of detections: {32-not_recog+false_recog}, Correctsquares: {correct}, faulty squares: {faulty}. Not '
                         f'recognized: {not_recog}, falsely recognized: {false_recog}')
     squarex, squarey = 0, 0
     h, w = screen.get_height(), screen.get_width()
