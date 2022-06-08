@@ -77,6 +77,7 @@ class Square:
 
         self.state = state
         self.has_piece = False
+        self.color = None
 
     def draw(self, image, color, thickness=2):
         # Formattign npArray of corners for drawContours
@@ -298,7 +299,7 @@ def findSquares(corners, colorEdges):
             newSquare.draw(colorEdges, (0, 0, 255), 2)
             newSquare.drawROI(colorEdges, (255, 0, 0), 2)
             newSquare.classify(colorEdges)
-            Squares[r][7-c] = newSquare
+            Squares[r][7 - c] = newSquare
 
     if debug:
         # Show image with squares and ROI drawn and position labelled
@@ -313,7 +314,6 @@ def findSquares(corners, colorEdges):
 
 
 def detect_objects(squares, image_dim, image_bright):
-
     for j in squares:
         for i in j:
             num = int(i.position[0]) + int(i.position[-1])
@@ -324,12 +324,27 @@ def detect_objects(squares, image_dim, image_bright):
 
             gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
             edges = cv2.Canny(image=gray, threshold1=60, threshold2=120)
-            circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 50,param1=120, param2=10, minRadius=7, maxRadius=13)
+            circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 50, param1=120, param2=10, minRadius=5,
+                                       maxRadius=13)
             # param1 = canny highest value, lowest is half. param2 = accumulator threshold for the circle centers
 
             if circles is not None:
                 i.has_piece = True
-                print("piece!")
+                height, width, depth = img.shape
+                circle_img = np.zeros((height, width), np.uint8)
+
+                mask = cv2.circle(circle_img, (int(width / 2), int(height / 2)), 1, 1, thickness=-1)
+                masked_img = cv2.bitwise_and(img, img, mask=circle_img)
+
+                circle_locations = mask == 1
+                bgr = img[circle_locations]
+
+                rgb = bgr[..., ::-1]
+                if rgb[0][0]< 100:
+                    i.color = "black"
+                else:
+                    i.color = "white"
+
                 circles = np.uint16(np.around(circles))
                 for j in circles[0, :]:
                     center = (j[0], j[1])
@@ -340,10 +355,11 @@ def detect_objects(squares, image_dim, image_bright):
                     cv2.circle(img, center, radius, (255, 0, 255), 3)
             if debug is True:
                 cv2.imshow("Squares", img)
-                cv2.imshow("gray",gray)
+                cv2.imshow("gray", gray)
                 cv2.imshow("edge", edges)
                 cv2.waitKey(0)
     return squares
+
 
 def alter_detect_objects(img_raw):
     bilateral_filtered_image = cv2.bilateralFilter(img_raw, 5, 175, 175)

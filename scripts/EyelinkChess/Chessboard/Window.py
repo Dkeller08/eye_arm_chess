@@ -19,9 +19,9 @@ except:
 
 def board(screen, Dummy):
     def undistort(img):
-        cv2.imshow("undistorted",img)
+        cv2.imshow("undistorted", img)
         cv2.waitKey(0)
-        DIM=(1920, 1440)
+        DIM = (1920, 1440)
         K = np.array([[1141.0682579839233, 0.0, 986.5923008101605], [0.0, 1141.588261433595, 747.2232727434749],
                       [0.0, 0.0, 1.0]])
         D = np.array([[-0.07684126395433953], [0.22851365143861682], [-0.4987877748120961], [0.3869384335287188]])
@@ -38,17 +38,17 @@ def board(screen, Dummy):
             cap = cv2.VideoCapture(0)
             cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)  # auto mode
             cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # manual mode
-            cap.set(cv2.CAP_PROP_EXPOSURE, 15) #0-5000
-            cap.set(cv2.CAP_PROP_CONTRAST, 13) # 0-30
-            cap.set(cv2.CAP_PROP_BRIGHTNESS, 20) #-64-64
+            cap.set(cv2.CAP_PROP_EXPOSURE, 15)  # 0-5000
+            cap.set(cv2.CAP_PROP_CONTRAST, 13)  # 0-30
+            cap.set(cv2.CAP_PROP_BRIGHTNESS, 20)  # -64-64
 
             camera_used = True
         except:
             print("Camera cannot be accesed")
             camera_used = False
         ret, frame_dim = cap.read()
-        #frame_dim = cv2.imread('dim.jpg')
-        #frame_dim = undistort(frame_dim)
+        # frame_dim = cv2.imread('dim.jpg')
+        # frame_dim = undistort(frame_dim)
         if debug is True:
             cv2.imshow('frame', frame_dim)
             cv2.waitKey(0)
@@ -59,16 +59,16 @@ def board(screen, Dummy):
             cap = cv2.VideoCapture(0)
             cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3)  # auto mode
             cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # manual mode
-            cap.set(cv2.CAP_PROP_EXPOSURE, 20) #0-5000
-            cap.set(cv2.CAP_PROP_CONTRAST, 13) #0-30
+            cap.set(cv2.CAP_PROP_EXPOSURE, 20)  # 0-5000
+            cap.set(cv2.CAP_PROP_CONTRAST, 13)  # 0-30
             cap.set(cv2.CAP_PROP_BRIGHTNESS, 20)  # -64-64
             camera_used = True
         except:
             print("Camera cannot be accesed")
             camera_used = False
         ret, frame_bright = cap.read()
-        #frame_bright = cv2.imread('bright.jpg')
-        #frame_bright = undistort(frame_bright)
+        # frame_bright = cv2.imread('bright.jpg')
+        # frame_bright = undistort(frame_bright)
         if debug is True:
             cv2.imshow('frame', frame_bright)
             cv2.waitKey(0)
@@ -93,10 +93,10 @@ def board(screen, Dummy):
                 else:
                     false_squares += 1
                     if board[i][j].piece_bool:
-                        not_recognized +=1
+                        not_recognized += 1
                     else:
                         print(square[i][j].position)
-                        falsely_recognized+=1
+                        falsely_recognized += 1
 
         return correct_squares, false_squares, not_recognized, falsely_recognized
 
@@ -222,17 +222,19 @@ def board(screen, Dummy):
     def compare_boards(board, playerTurn, turner, pawns_moved, Castle, selected_string):
         square = check_board()
         move_string = []
+        now_empty = []
+        now_full = []
         for i in range(8):
             for j in range(8):
-                now_empty = []
-                now_full = []
-                if board[i][j].has_piece != square[i][j].has_piece:
-                    if board[i][j].has_piece:
-                        now_empty.append([i,j])
+                board[i][j].has_piece()
+                print(board[i][j].piece_bool, square[i][j].has_piece)
+                if board[i][j].piece_bool != square[i][j].has_piece:
+                    if board[i][j].piece_bool:
+                        now_empty.append([i, j])
                     else:
-                        now_full.append([i,j])
+                        now_full.append([i, j])
 
-
+        print(now_empty, now_full)
         if len(now_empty) == 1 and len(now_full) == 1:
             print("move detected")
             board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
@@ -246,9 +248,83 @@ def board(screen, Dummy):
                 pawns_moved,
                 Castle,
                 selected_string)
+            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                board,
+                now_full[0][0],
+                now_full[0][1],
+                now_empty[0][0],
+                now_empty[0][1],
+                playerTurn,
+                turner,
+                pawns_moved,
+                Castle,
+                selected_string)
+        elif len(now_empty) == 1 and len(now_full) == 0:
+            hit_piece = []
+            for i in range(8):
+                for j in range(8):
+                    if board[i][j].piece is not None and square[i][j].color is not None and board[i][j].piece.player != \
+                            square[i][j].color:
+                        hit_piece.append([i, j])
+                        print(board[i][j].piece.player, square[i][j].color)
+            if len(hit_piece) == 1:
+                board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                    board,
+                    now_empty[0][0],
+                    now_empty[0][1],
+                    hit_piece[0][0],
+                    hit_piece[0][1],
+                    playerTurn,
+                    turner,
+                    pawns_moved,
+                    Castle,
+                    selected_string)
+                board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                    board,
+                    hit_piece[0][0],
+                    hit_piece[0][1],
+                    now_empty[0][0],
+                    now_empty[0][1],
+                    playerTurn,
+                    turner,
+                    pawns_moved,
+                    Castle,
+                    selected_string)
+            else:
+                print("no hit found")
+                print(hit_piece)
+        elif len(now_empty) == 2 and len(now_full) == 2:
+            for empty in now_empty:
+                if empty[0] == 4:
+                    for full in now_full:
+                        print("one last if statement")
+                        print(full[0])
+                        if abs(full[0] - 4) == 2:
+                            print("casteling")
+                            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                                board,
+                                empty[0],
+                                empty[1],
+                                full[0],
+                                full[1],
+                                playerTurn,
+                                turner,
+                                pawns_moved,
+                                Castle,
+                                selected_string)
+                            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                                board,
+                                full[0],
+                                full[1],
+                                empty[0],
+                                empty[1],
+                                playerTurn,
+                                turner,
+                                pawns_moved,
+                                Castle,
+                                selected_string)
+
         return board, playerTurn, turner, pawns_moved, Castle, selected_string, move_string
-
-
 
     def abort_trial():
         """Ends recording
@@ -295,8 +371,9 @@ def board(screen, Dummy):
     # Set some constants
     correct, faulty, not_recog, false_recog = check_initial_position(squares)
     if faulty != 0:
-        raise Exception(f'Board not found correctly! Number of detections: {32-not_recog+false_recog}, Correctsquares: {correct}, faulty squares: {faulty}. Not '
-                        f'recognized: {not_recog}, falsely recognized: {false_recog}')
+        raise Exception(
+            f'Board not found correctly! Number of detections: {32 - not_recog + false_recog}, Correctsquares: {correct}, faulty squares: {faulty}. Not '
+            f'recognized: {not_recog}, falsely recognized: {false_recog}')
     squarex, squarey = 0, 0
     h, w = screen.get_height(), screen.get_width()
     Castle = False
@@ -408,12 +485,10 @@ def board(screen, Dummy):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
-                    squares, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = compare_boards(squares,playerTurn,turner, pawns_moved,Castle, selected_string)
+                    squares, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = compare_boards(
+                        squares, playerTurn, turner, pawns_moved, Castle, selected_string)
                     pieces_block = []
-                    if move_string != "" and robot_connected:
-                        # os.system("python2.7 ../../move_cartesian.py " + move_string)
-                        # subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
-                        move_cartesian.input_move(move_string)
+                    print(move_string)
                 if event.key == pygame.K_q:
                     running = False
                     if not Dummy:
