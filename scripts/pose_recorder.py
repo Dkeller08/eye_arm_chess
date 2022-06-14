@@ -17,3 +17,4 @@ scene = moveit_commander.PlanningSceneInterface()
 group_name = "panda_arm"
 move_group = moveit_commander.MoveGroupCommander(group_name)
 rospy.loginfo(move_group.get_current_pose())
+rospy.loginfo(move_group.get_current_joint_values())

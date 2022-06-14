@@ -8,8 +8,9 @@ import actionlib
 from franka_gripper.msg import GraspGoal, GraspAction, GraspEpsilon, MoveGoal, MoveAction
 
 ready_state = [0.307015690168, -0.000254705662673, 0.590184127074]
-left_corner = [0.32, 0.205, 0.39]
-left_upcorner = [0.72, 0.205, 0.39]
+up_state = [0.31, 0, 0.87]
+left_corner = [0.30, 0.205, 0.39]
+left_upcorner = [0.70, 0.205, 0.39]
 high_state = 0.49
 horse_hight = 0.405
 closed_width = 0
@@ -53,17 +54,19 @@ def move(x, y, z):
 
 
 def move_readystate():
-    move(0.3, 0, 0.7)
-    # # We get the joint values from the group and change some of the values:
-    # joint_goal = [-6.571155563683817e-06, -0.7850979563272178, 1.4132255206966704e-05, -2.355953352448032,
-    #               5.718449604152909e-05, 1.5709416773256253, 0.7849234744254199]
-    #
-    # # The go command can be called with joint values, poses, or without any
-    # # parameters if you have already set the pose or joint target for the group
-    # move_group.go(joint_goal, wait=True)
-    #
-    # # Calling ``stop()`` ensures that there is no residual movement
-    # move_group.stop()
+    # move(0.3, 0, 0.7)
+    # We get the joint values from the group and change some of the values:
+    joint_goal = [-6.571155563683817e-06, -0.7850979563272178, 1.4132255206966704e-05, -2.355953352448032,
+                  5.718449604152909e-05, 1.5709416773256253, 0.7849234744254199]
+
+    # The go command can be called with joint values, poses, or without any
+    # parameters if you have already set the pose or joint target for the group
+    move_group.set_max_velocity_scaling_factor(1)
+    move_group.set_max_acceleration_scaling_factor(1)
+    move_group.go(joint_goal, wait=True)
+
+    # Calling ``stop()`` ensures that there is no residual movement
+    move_group.stop()
 
 
 def input_move(chess_move):
@@ -77,7 +80,6 @@ def input_move(chess_move):
     number_move_1 = left_corner[0] + int(squares[1]) * ((left_upcorner[0] - left_corner[0]) / 7)
     letter_move_2 = left_corner[1] - int(squares[2]) * ((2 * left_corner[1]) / 7)
     number_move_2 = left_corner[0] + int(squares[3]) * ((left_upcorner[0] - left_corner[0]) / 7)
-    move_readystate()
     gripper_move()
     if 'x' in chess_move:
         h_1 =h
@@ -125,7 +127,6 @@ def input_move(chess_move):
         move(number_move_1, rook_move, left_corner[2]+0.003)
         gripper_move()
         #move(number_move_1, rook_move, high_state)
-        move_readystate()
 
 
     else:
@@ -139,8 +140,21 @@ def input_move(chess_move):
         move(number_move_2, letter_move_2, h+0.003)
         gripper_move()
         #move(number_move_2, letter_move_2, high_state)
-        move_readystate()
         h = left_corner[2]
+
+    move_up()
+
+def move_up():
+    joint_goal = [0.0003318882895201948, -0.284279482700614, -0.00037862229923995433, -1.1254750879020021, 0.0016921628054822192, 0.8419186478455859, 0.7855230086561859]
+    # The go command can be called with joint values, poses, or without any
+    # parameters if you have already set the pose or joint target for the group
+    move_group.set_max_velocity_scaling_factor(1)
+    move_group.set_max_acceleration_scaling_factor(1)
+    move_group.go(joint_goal, wait=True)
+
+    # Calling ``stop()`` ensures that there is no residual movement
+    move_group.stop()
+
 
 
 moveit_commander.roscpp_initialize(sys.argv)

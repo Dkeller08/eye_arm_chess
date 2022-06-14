@@ -170,6 +170,7 @@ def board(screen, Dummy):
         def_squarex = def_movex
         def_squarey = def_movey
         def_Castle = False
+        move_cartesian.move_up()
 
         # selecting tiles
         for i in range(8):
@@ -224,6 +225,7 @@ def board(screen, Dummy):
         move_string = []
         now_empty = []
         now_full = []
+        moved = False
         for i in range(8):
             for j in range(8):
                 board[i][j].has_piece()
@@ -259,6 +261,7 @@ def board(screen, Dummy):
                 pawns_moved,
                 Castle,
                 selected_string)
+            moved = True
         elif len(now_empty) == 1 and len(now_full) == 0:
             hit_piece = []
             for i in range(8):
@@ -290,6 +293,7 @@ def board(screen, Dummy):
                     pawns_moved,
                     Castle,
                     selected_string)
+                moved = True
             else:
                 print("no hit found")
                 print(hit_piece)
@@ -323,8 +327,9 @@ def board(screen, Dummy):
                                 pawns_moved,
                                 Castle,
                                 selected_string)
+                            moved = True
 
-        return board, playerTurn, turner, pawns_moved, Castle, selected_string, move_string
+        return board, playerTurn, turner, pawns_moved, Castle, selected_string, move_string, moved
 
     def abort_trial():
         """Ends recording
@@ -369,11 +374,11 @@ def board(screen, Dummy):
             piece = Pieces.starting_position(i, j)
             squares[i][j] = Board.Square(i, j, screen, piece, False)
     # Set some constants
-    correct, faulty, not_recog, false_recog = check_initial_position(squares)
-    if faulty != 0:
-        raise Exception(
-            f'Board not found correctly! Number of detections: {32 - not_recog + false_recog}, Correctsquares: {correct}, faulty squares: {faulty}. Not '
-            f'recognized: {not_recog}, falsely recognized: {false_recog}')
+    # correct, faulty, not_recog, false_recog = check_initial_position(squares)
+    # if faulty != 0:
+    #     raise Exception(
+    #         f'Board not found correctly! Number of detections: {32 - not_recog + false_recog}, Correctsquares: {correct}, faulty squares: {faulty}. Not '
+    #         f'recognized: {not_recog}, falsely recognized: {false_recog}')
     squarex, squarey = 0, 0
     h, w = screen.get_height(), screen.get_width()
     Castle = False
@@ -485,10 +490,14 @@ def board(screen, Dummy):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
-                    squares, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = compare_boards(
-                        squares, playerTurn, turner, pawns_moved, Castle, selected_string)
-                    pieces_block = []
-                    print(move_string)
+                    counter = 0
+                    while counter < 10:
+                        squares, playerTurn, turner, pawns_moved, Castle, selected_string, move_string, moved = compare_boards(
+                            squares, playerTurn, turner, pawns_moved, Castle, selected_string)
+                        pieces_block = []
+                        if moved:
+                            break
+
                 if event.key == pygame.K_q:
                     running = False
                     if not Dummy:
