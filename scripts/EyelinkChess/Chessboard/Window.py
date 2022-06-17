@@ -75,8 +75,8 @@ def board(screen, Dummy):
             cv2.destroyAllWindows()
         cap.release()
 
-        square = board_recognition.board_recognition(frame_dim, frame_bright)
-        return square
+        square, photo_false = board_recognition.board_recognition(frame_dim, frame_bright)
+        return square, photo_false
 
     def check_initial_position(board):
         correct_squares = 0
@@ -170,7 +170,6 @@ def board(screen, Dummy):
         def_squarex = def_movex
         def_squarey = def_movey
         def_Castle = False
-        move_cartesian.move_up()
 
         # selecting tiles
         for i in range(8):
@@ -221,62 +220,31 @@ def board(screen, Dummy):
         return def_squares, def_squarex, def_squarey, def_playerTurn, def_turner, def_pawns_moved, def_Castle, def_selected_string, def_move_string
 
     def compare_boards(board, playerTurn, turner, pawns_moved, Castle, selected_string):
-        square = check_board()
+        square, photo_false = check_board()
         move_string = []
         now_empty = []
         now_full = []
         moved = False
-        for i in range(8):
-            for j in range(8):
-                board[i][j].has_piece()
-                print(board[i][j].piece_bool, square[i][j].has_piece)
-                if board[i][j].piece_bool != square[i][j].has_piece:
-                    if board[i][j].piece_bool:
-                        now_empty.append([i, j])
-                    else:
-                        now_full.append([i, j])
-
-        print(now_empty, now_full)
-        if len(now_empty) == 1 and len(now_full) == 1:
-            print("move detected")
-            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
-                board,
-                now_empty[0][0],
-                now_empty[0][1],
-                now_full[0][0],
-                now_full[0][1],
-                playerTurn,
-                turner,
-                pawns_moved,
-                Castle,
-                selected_string)
-            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
-                board,
-                now_full[0][0],
-                now_full[0][1],
-                now_empty[0][0],
-                now_empty[0][1],
-                playerTurn,
-                turner,
-                pawns_moved,
-                Castle,
-                selected_string)
-            moved = True
-        elif len(now_empty) == 1 and len(now_full) == 0:
-            hit_piece = []
+        if not photo_false:
             for i in range(8):
                 for j in range(8):
-                    if board[i][j].piece is not None and square[i][j].color is not None and board[i][j].piece.player != \
-                            square[i][j].color:
-                        hit_piece.append([i, j])
-                        print(board[i][j].piece.player, square[i][j].color)
-            if len(hit_piece) == 1:
+                    board[i][j].has_piece()
+                    print(board[i][j].piece_bool, square[i][j].has_piece)
+                    if board[i][j].piece_bool != square[i][j].has_piece:
+                        if board[i][j].piece_bool:
+                            now_empty.append([i, j])
+                        else:
+                            now_full.append([i, j])
+
+            print(now_empty, now_full)
+            if len(now_empty) == 1 and len(now_full) == 1:
+                print("move detected")
                 board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
                     board,
                     now_empty[0][0],
                     now_empty[0][1],
-                    hit_piece[0][0],
-                    hit_piece[0][1],
+                    now_full[0][0],
+                    now_full[0][1],
                     playerTurn,
                     turner,
                     pawns_moved,
@@ -284,8 +252,8 @@ def board(screen, Dummy):
                     selected_string)
                 board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
                     board,
-                    hit_piece[0][0],
-                    hit_piece[0][1],
+                    now_full[0][0],
+                    now_full[0][1],
                     now_empty[0][0],
                     now_empty[0][1],
                     playerTurn,
@@ -294,40 +262,72 @@ def board(screen, Dummy):
                     Castle,
                     selected_string)
                 moved = True
-            else:
-                print("no hit found")
-                print(hit_piece)
-        elif len(now_empty) == 2 and len(now_full) == 2:
-            for empty in now_empty:
-                if empty[0] == 4:
-                    for full in now_full:
-                        print("one last if statement")
-                        print(full[0])
-                        if abs(full[0] - 4) == 2:
-                            print("casteling")
-                            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
-                                board,
-                                empty[0],
-                                empty[1],
-                                full[0],
-                                full[1],
-                                playerTurn,
-                                turner,
-                                pawns_moved,
-                                Castle,
-                                selected_string)
-                            board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
-                                board,
-                                full[0],
-                                full[1],
-                                empty[0],
-                                empty[1],
-                                playerTurn,
-                                turner,
-                                pawns_moved,
-                                Castle,
-                                selected_string)
-                            moved = True
+            elif len(now_empty) == 1 and len(now_full) == 0:
+                hit_piece = []
+                for i in range(8):
+                    for j in range(8):
+                        if board[i][j].piece is not None and square[i][j].color is not None and board[i][j].piece.player != \
+                                square[i][j].color:
+                            hit_piece.append([i, j])
+                            print(board[i][j].piece.player, square[i][j].color)
+                if len(hit_piece) == 1:
+                    board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                        board,
+                        now_empty[0][0],
+                        now_empty[0][1],
+                        hit_piece[0][0],
+                        hit_piece[0][1],
+                        playerTurn,
+                        turner,
+                        pawns_moved,
+                        Castle,
+                        selected_string)
+                    board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                        board,
+                        hit_piece[0][0],
+                        hit_piece[0][1],
+                        now_empty[0][0],
+                        now_empty[0][1],
+                        playerTurn,
+                        turner,
+                        pawns_moved,
+                        Castle,
+                        selected_string)
+                    moved = True
+                else:
+                    print("no hit found")
+                    print(hit_piece)
+            elif len(now_empty) == 2 and len(now_full) == 2:
+                for empty in now_empty:
+                    if empty[0] == 4:
+                        for full in now_full:
+                            print("one last if statement")
+                            print(full[0])
+                            if abs(full[0] - 4) == 2:
+                                print("casteling")
+                                board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                                    board,
+                                    empty[0],
+                                    empty[1],
+                                    full[0],
+                                    full[1],
+                                    playerTurn,
+                                    turner,
+                                    pawns_moved,
+                                    Castle,
+                                    selected_string)
+                                board, squarex, squarey, playerTurn, turner, pawns_moved, Castle, selected_string, move_string = check_moves(
+                                    board,
+                                    full[0],
+                                    full[1],
+                                    empty[0],
+                                    empty[1],
+                                    playerTurn,
+                                    turner,
+                                    pawns_moved,
+                                    Castle,
+                                    selected_string)
+                                moved = True
 
         return board, playerTurn, turner, pawns_moved, Castle, selected_string, move_string, moved
 
@@ -356,6 +356,11 @@ def board(screen, Dummy):
         # send a message to mark trial end
         el_tracker.sendMessage('TRIAL_RESULT %d' % pylink.TRIAL_ERROR)
 
+    def draw(l_x, l_y):
+        image_white = pygame.transform.scale(pygame.image.load("../Images/download.png"), (20, 20))
+        screen.blit(image_white, (l_x, l_y))
+        return
+
     if not Dummy:
         el_tracker = pylink.getEYELINK()
         el_tracker.setOfflineMode()
@@ -380,6 +385,7 @@ def board(screen, Dummy):
     #         f'Board not found correctly! Number of detections: {32 - not_recog + false_recog}, Correctsquares: {correct}, faulty squares: {faulty}. Not '
     #         f'recognized: {not_recog}, falsely recognized: {false_recog}')
     squarex, squarey = 0, 0
+    move_cartesian.move_up()
     h, w = screen.get_height(), screen.get_width()
     Castle = False
     players = ["white", "black"]
@@ -391,7 +397,7 @@ def board(screen, Dummy):
     width_board = 4 * screen.get_height() / 5
     white = (255, 255, 255)
     black = (0, 0, 0)
-    minimum_duration = 3000
+    minimum_duration = 2000
     minimum_move_duration = 750
     new_sample = None
     old_sample = None
@@ -417,6 +423,7 @@ def board(screen, Dummy):
                 r_x, r_y = new_sample.getRightEye().getGaze()
 
                 l_x, l_y = new_sample.getLeftEye().getGaze()
+                # draw(l_x, l_y)
 
                 if min(l_y, r_y) >= width_board:
                     # record gaze start time
@@ -455,6 +462,7 @@ def board(screen, Dummy):
                                 # os.system("python2.7 ../../move_cartesian.py " + move_string)
                                 # subprocess.Popen(["python2.7", "../../move_cartesian.py", move_string])
                                 move_cartesian.input_move(move_string)
+                                trigger_fired = False
 
 
                     else:

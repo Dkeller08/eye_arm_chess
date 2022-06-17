@@ -7,12 +7,7 @@ from pygame import FULLSCREEN, DOUBLEBUF
 
 from CalibrationGraphicsPygame import CalibrationGraphics
 
-""" A short script showing how to use this library.
-
-We connect to the tracker, open a Pygame window, and then configure the
-graphics environment for calibration. Then, perform a calibration and
-disconnect from the tracker.
-
+""" 
 The doTrackerSetup() command will bring up a gray calibration screen.
 When the gray screen comes up, press Enter to show the camera image,
 press C to calibrate, V to validate, and O to quit calibration"""
@@ -26,8 +21,8 @@ pygame.display.set_icon(icon)
 
 # get the screen resolution natively supported by the monitor
 disp = pylink.getDisplayInformation()
-scn_w = disp.width
-scn_h = disp.height
+scn_w = 1920
+scn_h = 1080
 
 # connect to the tracker
 try:

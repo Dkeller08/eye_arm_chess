@@ -266,51 +266,55 @@ def findSquares(corners, colorEdges):
     '''
     Finds the squares of the chessboard
     '''
-
+    Photo_is_wrong = False
     # sort corners by row
+
     corners.sort(key=lambda x: x[0])
     rows = [[], [], [], [], [], [], [], [], []]
     r = 0
     for c in range(0, 81):
         if c > 0 and c % 9 == 0:
             r = r + 1
-
-        rows[r].append(corners[c])
+        try:
+            rows[r].append(corners[c])
+        except:
+            Photo_is_wrong = True
 
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     numbers = ['1', '2', '3', '4', '5', '6', '7', '8']
     Squares = np.full((8, 8), Square)
 
-    # sort corners by column
-    for r in rows:
-        r.sort(key=lambda y: y[1])
+    if not Photo_is_wrong:
+        # sort corners by column
+        for r in rows:
+            r.sort(key=lambda y: y[1])
 
-    # initialize squares
-    for r in range(0, 8):
-        for c in range(0, 8):
-            c1 = rows[r][c]
-            c2 = rows[r][c + 1]
-            c3 = rows[r + 1][c]
-            c4 = rows[r + 1][c + 1]
+        # initialize squares
+        for r in range(0, 8):
+            for c in range(0, 8):
+                c1 = rows[r][c]
+                c2 = rows[r][c + 1]
+                c3 = rows[r + 1][c]
+                c4 = rows[r + 1][c + 1]
 
-            position = letters[r] + numbers[7 - c]
-            position_daniel = str(r) + str(7 - c)
-            newSquare = Square(colorEdges, c1, c2, c3, c4, position_daniel)
-            newSquare.draw(colorEdges, (0, 0, 255), 2)
-            newSquare.drawROI(colorEdges, (255, 0, 0), 2)
-            newSquare.classify(colorEdges)
-            Squares[r][7 - c] = newSquare
+                position = letters[r] + numbers[7 - c]
+                position_daniel = str(r) + str(7 - c)
+                newSquare = Square(colorEdges, c1, c2, c3, c4, position_daniel)
+                newSquare.draw(colorEdges, (0, 0, 255), 2)
+                newSquare.drawROI(colorEdges, (255, 0, 0), 2)
+                newSquare.classify(colorEdges)
+                Squares[r][7 - c] = newSquare
 
-    if debug:
-        # Show image with squares and ROI drawn and position labelled
-        cv2.imshow("Squares", colorEdges)
-        key = cv2.waitKey(0)
-        if key == ord("s"):
-            cv2.imwrite("squares.jpg", colorEdges)
+        if debug:
+            # Show image with squares and ROI drawn and position labelled
+            cv2.imshow("Squares", colorEdges)
+            key = cv2.waitKey(0)
+            if key == ord("s"):
+                cv2.imwrite("squares.jpg", colorEdges)
 
-        cv2.destroyAllWindows()
+            cv2.destroyAllWindows()
 
-    return Squares
+    return Squares, Photo_is_wrong
 
 
 def detect_objects(squares, image_dim, image_bright):
@@ -398,8 +402,11 @@ def board_recognition(image_dim, image_bright):
     # Find corners
     corners = findCorners(horizontal, vertical, colorEdges)
     # Find squares
-    squares = findSquares(corners, img_bright)
+    squares, Photo_is_wrong = findSquares(corners, img_bright)
     # detect objects
-    squares = detect_objects(squares, mask_dim, mask_bright)
-    cv2.destroyAllWindows()
-    return squares
+    if not Photo_is_wrong:
+        squares = detect_objects(squares, mask_dim, mask_bright)
+        cv2.destroyAllWindows()
+    else:
+        squares = corners
+    return squares, Photo_is_wrong
